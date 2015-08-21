@@ -1,6 +1,8 @@
 Usage
 =====
 
+* [Pythia 8](http://home.thep.lu.se/~torbjorn/Pythia.html) with the version >= 8.2 must be installed.
+
 * Generate `Makefile.inc` using `configure`. For example, if `Pythia8` is located in `/usr/local`,
 
 ```
