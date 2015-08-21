@@ -9,3 +9,4 @@
 Makefile.inc
 *.lhe
 *.log
+*.hepmc
