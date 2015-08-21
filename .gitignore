@@ -1,0 +1,11 @@
+*.o
+*.lo
+*.a
+*.la
+*~
+.#*
+.swp
+
+Makefile.inc
+*.lhe
+*.log
