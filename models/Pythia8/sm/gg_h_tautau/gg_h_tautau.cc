@@ -1,12 +1,12 @@
+#include "gg_h_tautau.h"
 #include "Pythia8/Pythia.h"
 #include "CLHEF/lhef.h"
-#include "gg_h_tautau.h"
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
 
-void pythiaSettings(Pythia8::Pythia *pythia) {
+void PythiaSettings(Pythia8::Pythia *pythia) {
     // pythia->readString("PartonLevel:all = off");
     pythia->readString("PartonLevel:FSR = off");
     pythia->readString("PartonLevel:ISR = off");
@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
 
     // Generator.
     Pythia8::Pythia pythia;
-    pythiaSettings(&pythia);
+    PythiaSettings(&pythia);
     pythia.init();
 
     ofstream outfile;
@@ -59,11 +59,11 @@ int main(int argc, char* argv[]) {
     int nevent = std::atoi(argv[2]);
     // Loop over events.
     for (int ieve = 0; ieve < nevent; ++ieve) {
-        // Generate an event.
-        pythia.next();
+        if (!pythia.next()) {
+            continue;
+        }
 
         lhef::Particles ps;
-
         for (int i = 0; i < pythia.event.size(); ++i) {
             auto p = pythia.event.at(i);
 
@@ -87,10 +87,6 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        lhef::EventInfo evinfo(ps.size(), 0,
-                               pythia.info.weight(), pythia.info.scalup(),
-                               pythia.info.alphaEM(), pythia.info.alphaS());
-
         lhef::EventEntry entry;
         int i = 1;
         for (const auto& p : ps) {
@@ -98,13 +94,16 @@ int main(int argc, char* argv[]) {
             ++i;
         }
 
+        lhef::EventInfo evinfo(ps.size(), 0,
+                               pythia.info.weight(), pythia.info.scalup(),
+                               pythia.info.alphaEM(), pythia.info.alphaS());
         lhef::Event ev(evinfo, entry);
         outfile << ev << '\n';
     }  // event loop
 
+    outfile << lhef::ClosingLine();
+    outfile.close();
+
     // Statistics: full printout.
     pythia.stat();
-
-    outfile << lhef::ClosingLine() << '\n';
-    outfile.close();
 }
