@@ -1,5 +1,5 @@
-Usage
-=====
+Usage 1
+========
 
 * [Pythia 8](http://home.thep.lu.se/~torbjorn/Pythia.html) with the version >= 8.2 must be installed.
 
@@ -20,3 +20,21 @@ Usage
 ```
 ./gg_H_hh test.lhe 1000 > test.log
 ```
+
+
+Usage 2 : Run for cluster 
+=========================
+
+$ ./configure.sh
+$ make
+
+: This builds the executable '<model>_cluster'
+: Then, modify the job submission script - 'qsub_pythia8.sh', with proper env. variables and running arguments.
+: And, submit by
+
+$ qsub -q compute-all-high ./qsub_pythia8.sh
+
+: Check the job status by
+
+$ watch qstat -f
+
