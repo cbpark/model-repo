@@ -69,21 +69,22 @@ int main(int argc, char* argv[]) {
 
             if (p.statusAbs() == 61) {
                 // incoming particles
-                ps.push_back(ToLHEFParticle(-1, p));
+                ps.push_back(ToLHEFParticle(-1, 0, 0, p));
             } else if (p.statusAbs() == 62 && p.id() == 25) {
                 // Higgs boson
-                ps.push_back(ToLHEFParticle(2, p));
+                ps.push_back(ToLHEFParticle(2, 1, 2, p));
             } else if (p.statusAbs() == 23 && p.idAbs() == 15
                        && pythia.event.at(p.mother1()).id() == 25) {
                 // tau leptons from Higgs
-                ps.push_back(ToLHEFParticle(2, p));
+                ps.push_back(ToLHEFParticle(2, 3, 3, p));
             } else if (p.statusAbs() == 91
                        && pythia.event.at(p.mother1()).idAbs() == 15) {
                 // daughters of tau lepton
                 // - This may contain pi0, which will eventually decay
                 //   into photons. Hence, pi0 can be considered as a
                 //   visible particle.
-                ps.push_back(ToLHEFParticle(1, p));
+                int motherline = p.mother1() - 9;
+                ps.push_back(ToLHEFParticle(1, motherline, motherline, p));
             }
         }
 
