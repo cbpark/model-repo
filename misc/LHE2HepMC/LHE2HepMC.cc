@@ -3,13 +3,13 @@
 #include <iostream>
 #include <string>
 
-void pythiaSettings(Pythia8::Pythia *pythia) {
+void PythiaSettings(Pythia8::Pythia *pythia) {
     // No automatic event listings - do it manually below.
     pythia->readString("Next:numberShowLHA = 0");
     pythia->readString("Next:numberShowInfo = 0");
     pythia->readString("Next:numberShowProcess = 0");
     pythia->readString("Next:numberShowEvent = 0");
-    pythia->readString("PDF:lepton = off");
+
     // Initialize Les Houches Event File run.
     pythia->readString("Beams:frameType = 4");
 }
@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
     // Generator.
     Pythia8::Pythia pythia;
     pythia.readString("Beams:LHEF = " + lhefile);
-    pythiaSettings(&pythia);
+    PythiaSettings(&pythia);
     pythia.init();
 
     int nEvent = std::atoi(argv[2]);
