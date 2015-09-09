@@ -1,4 +1,4 @@
-#include "gg_h_tautau.h"
+#include "gg_h_tautau_parton.h"
 #include "Pythia8/Pythia.h"
 #include "CLHEF/lhef.h"
 #include <fstream>
@@ -31,7 +31,7 @@ void PythiaSettings(Pythia8::Pythia *pythia) {
 }
 
 int main(int argc, char* argv[]) {
-    std::string appname = "gg_h_tautau";
+    std::string appname = "gg_h_tautau_parton";
     if (argc != 3) {
         std::cerr << " Usage: " << appname << " output nevent\n"
                   << " output - output file\n"

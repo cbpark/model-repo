@@ -1,5 +1,5 @@
-#ifndef GG_H_TAUTAU_H_
-#define GG_H_TAUTAU_H_
+#ifndef GG_H_TAUTAU_PARTON_H_
+#define GG_H_TAUTAU_PARTON_H_
 
 #include "Pythia8/Pythia.h"
 #include "CLHEF/lhef.h"
@@ -12,4 +12,4 @@ lhef::Particle ToLHEFParticle(const int& status,
                           0.0, 0.0);
 }
 
-#endif  // GG_H_TAUTAU_H_
+#endif  // GG_H_TAUTAU_PARTON_H_

@@ -46,7 +46,7 @@ CXX11 = -std=c++11 -stdlib=libc++
 
 # All targets (no default behavior).
 all: \
-	gg_h_tautau
+	gg_h_tautau_parton
 
 # The Makefile configuration.
 Makefile.inc:
@@ -58,11 +58,11 @@ $(PREFIX_LIB)/libpythia8.a :
 	$(error Error: PYTHIA must be built, please run "make"\
                 in the top PYTHIA directory)
 
-gg_h_tautau: $$@.cc \
+gg_h_tautau_parton: $$@.cc \
 	$(PREFIX_LIB)/libpythia8.a
 	$(CXX) $^ -o $@ $(CXX_COMMON) $(CXX11) -I$(CLHEF) -L$(CLHEF) -lCLHEF
 
 # Clean.
 clean:
-	rm -f gg_h_tautau;
+	rm -f gg_h_tautau_parton;
 	rm -f *~; rm -f \#*
