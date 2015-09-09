@@ -34,7 +34,11 @@ CXX_COMMON:=-I$(PREFIX_INCLUDE) $(CXX_COMMON) -Wl,-rpath $(PREFIX_LIB) -ldl
 CLHEF = /usr/local
 
 # Flags for C++11
-CXX11 = -std=c++11 -stdlib=libc++
+CXX11 = -std=c++11
+UNAME := $(shell uname)
+ifeq ($(UNAME), Darwin)
+	CXX11 += -stdlib=libc++
+endif
 
 ################################################################################
 # RULES: Definition of the rules used to build the PYTHIA examples.
