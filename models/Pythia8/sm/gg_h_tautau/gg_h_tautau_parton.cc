@@ -7,10 +7,10 @@
 #include <vector>
 
 void PythiaSettings(Pythia8::Pythia *pythia) {
-    // pythia->readString("PartonLevel:all = off");
     pythia->readString("PartonLevel:FSR = off");
     pythia->readString("PartonLevel:ISR = off");
     pythia->readString("PartonLevel:MPI = off");
+    // pythia->readString("HadronLevel:Hadronize = off");
 
     // LHC 14 TeV initialization.
     pythia->readString("Beams:eCM = 14000.0");
@@ -67,24 +67,28 @@ int main(int argc, char* argv[]) {
         for (int i = 0; i < pythia.event.size(); ++i) {
             auto p = pythia.event.at(i);
 
-            if (p.statusAbs() == 61) {
+            if (p.statusAbs() == 21) {
                 // incoming particles
                 ps.push_back(ToLHEFParticle(-1, 0, 0, p));
-            } else if (p.statusAbs() == 62 && p.id() == 25) {
+            } else if (p.statusAbs() == 22 && p.id() == 25) {
                 // Higgs boson
                 ps.push_back(ToLHEFParticle(2, 1, 2, p));
             } else if (p.statusAbs() == 23 && p.idAbs() == 15
                        && pythia.event.at(p.mother1()).id() == 25) {
                 // tau leptons from Higgs
                 ps.push_back(ToLHEFParticle(2, 3, 3, p));
-            } else if (p.statusAbs() == 91
-                       && pythia.event.at(p.mother1()).idAbs() == 15) {
-                // daughters of tau lepton
+
+                // daughters of the tau lepton
                 // - This may contain pi0, which will eventually decay
                 //   into photons. Hence, pi0 can be considered as a
                 //   visible particle.
-                int motherline = p.mother1() - 9;
-                ps.push_back(ToLHEFParticle(1, motherline, motherline, p));
+                std::vector<int> daughters = p.daughterList();
+                for (const auto& d : daughters) {
+                    auto daughter = pythia.event.at(d);
+                    int motherline = daughter.mother1();
+                    ps.push_back(ToLHEFParticle(1, motherline, motherline,
+                                                daughter));
+                }
             }
         }
 
