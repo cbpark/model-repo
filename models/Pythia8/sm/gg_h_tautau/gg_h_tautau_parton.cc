@@ -10,7 +10,11 @@ void PythiaSettings(Pythia8::Pythia *pythia) {
     pythia->readString("PartonLevel:FSR = off");
     pythia->readString("PartonLevel:ISR = off");
     pythia->readString("PartonLevel:MPI = off");
-    // pythia->readString("HadronLevel:Hadronize = off");
+    pythia->readString("HadronLevel:Hadronize = off");
+
+    // Set random number seed for each run.
+    pythia->readString("Random:setSeed = on");
+    pythia->readString("Random:seed = 0");
 
     // LHC 14 TeV initialization.
     pythia->readString("Beams:eCM = 14000.0");
