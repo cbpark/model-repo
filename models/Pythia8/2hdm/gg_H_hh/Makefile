@@ -40,7 +40,7 @@ CXX_COMMON:=-I$(PREFIX_INCLUDE) $(CXX_COMMON) -Wl,-rpath $(PREFIX_LIB) -ldl
 
 # All targets (no default behavior).
 all: \
-	gg_H_hh
+	gg_H_hh_cluster gg_H_hh
 
 # The Makefile configuration.
 Makefile.inc:
@@ -52,11 +52,15 @@ $(PREFIX_LIB)/libpythia8.a :
 	$(error Error: PYTHIA must be built, please run "make"\
                 in the top PYTHIA directory)
 
+gg_H_hh_cluster: $$@.cc \
+	$(PREFIX_LIB)/libpythia8.a
+	$(CXX) $^ -o $@ $(CXX_COMMON)
+
 gg_H_hh: $$@.cc \
 	$(PREFIX_LIB)/libpythia8.a
 	$(CXX) $^ -o $@ $(CXX_COMMON)
 
 # Clean.
 clean:
-	rm -f gg_H_hh;
+	rm -f gg_H_hh_cluster gg_H_hh;
 	rm -f *~; rm -f \#*; rm -f core*; rm -f *Dct.*

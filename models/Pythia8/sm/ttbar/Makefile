@@ -40,7 +40,7 @@ CXX_COMMON:=-I$(PREFIX_INCLUDE) $(CXX_COMMON) -Wl,-rpath $(PREFIX_LIB) -ldl
 
 # All targets (no default behavior).
 all: \
-	ttbar
+	ttbar_cluster ttbar
 
 # The Makefile configuration.
 Makefile.inc:
@@ -52,11 +52,15 @@ $(PREFIX_LIB)/libpythia8.a :
 	$(error Error: PYTHIA must be built, please run "make"\
                 in the top PYTHIA directory)
 
+ttbar_cluster: $$@.cc \
+	$(PREFIX_LIB)/libpythia8.a
+	$(CXX) $^ -o $@ $(CXX_COMMON)
+
 ttbar: $$@.cc \
 	$(PREFIX_LIB)/libpythia8.a
 	$(CXX) $^ -o $@ $(CXX_COMMON)
 
 # Clean.
 clean:
-	rm -f ttbar;
+	rm -f ttbar_cluster ttbar;
 	rm -f *~; rm -f \#*; rm -f core*; rm -f *Dct.*

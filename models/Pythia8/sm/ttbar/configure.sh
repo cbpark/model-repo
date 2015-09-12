@@ -1,0 +1,1 @@
+./configure --with-lhapdf6=$LHAPDFDIR --with-lhapdf6-plugin=LHAPDF6.h --with-boost=/share/apps/boost-install --with-fastjet3=$FASTJETDIR --with-hepmc3=$HepMCDIR --with-root=$ROOTSYS --prefix=$PYTHIA8DIR
