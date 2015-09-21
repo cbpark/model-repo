@@ -1,0 +1,25 @@
+PartonLevel:FSR = off
+PartonLevel:ISR = off
+PartonLevel:MPI = off
+HadronLevel:Hadronize = off
+
+# Set random number seed for each run.
+Random:setSeed = on
+Random:seed = 0
+
+# LHC 14 TeV initialization.
+Beams:eCM = 14000.0
+
+# Process selection.
+HiggsSM:gg2H = on
+
+# parameters
+25:m0 = 125.0
+25:onMode = off
+25:onIfAll = 15 15
+
+# Tau decays
+TauDecays:mode = 2
+TauDecays:tauPolarization = 0
+TauDecays:tauMother = 25
+15:9:meMode = 1543

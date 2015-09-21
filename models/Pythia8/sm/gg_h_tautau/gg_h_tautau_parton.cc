@@ -6,34 +6,6 @@
 #include <string>
 #include <vector>
 
-void PythiaSettings(Pythia8::Pythia *pythia) {
-    pythia->readString("PartonLevel:FSR = off");
-    pythia->readString("PartonLevel:ISR = off");
-    pythia->readString("PartonLevel:MPI = off");
-    pythia->readString("HadronLevel:Hadronize = off");
-
-    // Set random number seed for each run.
-    pythia->readString("Random:setSeed = on");
-    pythia->readString("Random:seed = 0");
-
-    // LHC 14 TeV initialization.
-    pythia->readString("Beams:eCM = 14000.0");
-
-    // Process selection.
-    pythia->readString("HiggsSM:gg2H = on");
-
-    // parameters
-    pythia->readString("25:m0 = 125.0");
-    pythia->readString("25:onMode = off");
-    pythia->readString("25:onIfAll = 15 15");
-
-    // Tau decays
-    pythia->readString("TauDecays:mode = 2");
-    pythia->readString("TauDecays:tauPolarization = 0");
-    pythia->readString("TauDecays:tauMother = 25");
-    pythia->readString("15:9:meMode = 1543");
-}
-
 int main(int argc, char* argv[]) {
     std::string appname = "gg_h_tautau_parton";
     if (argc != 3) {
@@ -46,15 +18,14 @@ int main(int argc, char* argv[]) {
 
     // Generator.
     Pythia8::Pythia pythia;
-    PythiaSettings(&pythia);
+    pythia.readFile("gg_h_tautau_parton.cmnd");
     pythia.init();
 
     ofstream outfile;
     outfile.open(argv[1]);
-    outfile << lhef::OpeningLine() << '\n';
+    outfile << lhef::openingLine() << '\n';
     lhef::GlobalInfo info(pythia.info.idA(), pythia.info.idB(),
-                          pythia.info.eA(), pythia.info.eB(),
-                          0, 0, 3, 0, 0, 1,
+                          pythia.info.eA(), pythia.info.eB(), 0, 0, 3, 0, 0, 1,
                           std::vector<double>({0.0}),
                           std::vector<double>({0.0}),
                           std::vector<double>({1.0}), std::vector<int>({1}));
@@ -62,14 +33,12 @@ int main(int argc, char* argv[]) {
 
     int nevent = std::atoi(argv[2]);
     // Loop over events.
-    for (int ieve = 0; ieve < nevent; ++ieve) {
-        if (!pythia.next()) {
-            continue;
-        }
+    for (int ieve = 0; ieve != nevent; ++ieve) {
+        if (!pythia.next()) continue;
 
         lhef::Particles ps;
-        for (int i = 0; i < pythia.event.size(); ++i) {
-            auto p = pythia.event.at(i);
+        for (int ip = 0; ip != pythia.event.size(); ++ip) {
+            auto p = pythia.event.at(ip);
 
             if (p.statusAbs() == 21) {
                 // incoming particles
@@ -77,8 +46,8 @@ int main(int argc, char* argv[]) {
             } else if (p.statusAbs() == 22 && p.id() == 25) {
                 // Higgs boson
                 ps.push_back(ToLHEFParticle(2, 1, 2, p));
-            } else if (p.statusAbs() == 23 && p.idAbs() == 15
-                       && pythia.event.at(p.mother1()).id() == 25) {
+            } else if (p.statusAbs() == 23 && p.idAbs() == 15 &&
+                       pythia.event.at(p.mother1()).id() == 25) {
                 // tau leptons from Higgs
                 ps.push_back(ToLHEFParticle(2, 3, 3, p));
 
@@ -90,8 +59,8 @@ int main(int argc, char* argv[]) {
                 for (const auto& d : daughters) {
                     auto daughter = pythia.event.at(d);
                     int motherline = daughter.mother1();
-                    ps.push_back(ToLHEFParticle(1, motherline, motherline,
-                                                daughter));
+                    ps.push_back(
+                        ToLHEFParticle(1, motherline, motherline, daughter));
                 }
             }
         }
@@ -103,14 +72,14 @@ int main(int argc, char* argv[]) {
             ++i;
         }
 
-        lhef::EventInfo evinfo(ps.size(), 0,
-                               pythia.info.weight(), pythia.info.scalup(),
-                               pythia.info.alphaEM(), pythia.info.alphaS());
+        lhef::EventInfo evinfo(ps.size(), 0, pythia.info.weight(),
+                               pythia.info.scalup(), pythia.info.alphaEM(),
+                               pythia.info.alphaS());
         lhef::Event ev(evinfo, entry);
         outfile << ev << '\n';
     }  // event loop
 
-    outfile << lhef::ClosingLine();
+    outfile << lhef::closingLine();
     outfile.close();
 
     // Statistics: full printout.
