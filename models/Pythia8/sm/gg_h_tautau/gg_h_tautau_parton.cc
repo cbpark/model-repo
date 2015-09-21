@@ -42,14 +42,14 @@ int main(int argc, char* argv[]) {
 
             if (p.statusAbs() == 21) {
                 // incoming particles
-                ps.push_back(ToLHEFParticle(-1, 0, 0, p));
+                ps.push_back(toLHEFParticle(-1, 0, 0, p));
             } else if (p.statusAbs() == 22 && p.id() == 25) {
                 // Higgs boson
-                ps.push_back(ToLHEFParticle(2, 1, 2, p));
+                ps.push_back(toLHEFParticle(2, 1, 2, p));
             } else if (p.statusAbs() == 23 && p.idAbs() == 15 &&
                        pythia.event.at(p.mother1()).id() == 25) {
                 // tau leptons from Higgs
-                ps.push_back(ToLHEFParticle(2, 3, 3, p));
+                ps.push_back(toLHEFParticle(2, 3, 3, p));
 
                 // daughters of the tau lepton
                 // - This may contain pi0, which will eventually decay
@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
                     auto daughter = pythia.event.at(d);
                     int motherline = daughter.mother1();
                     ps.push_back(
-                        ToLHEFParticle(1, motherline, motherline, daughter));
+                        toLHEFParticle(1, motherline, motherline, daughter));
                 }
             }
         }
