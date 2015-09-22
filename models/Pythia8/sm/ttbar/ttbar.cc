@@ -2,22 +2,6 @@
 #include <iostream>
 #include <string>
 
-void pythiaSettings(Pythia8::Pythia *pythia) {
-    // Process selection.
-    pythia->readString("Top:gg2ttbar = on");
-    pythia->readString("Top:qqbar2ttbar = on");
-
-    // parameters
-    pythia->readString("5:m0 = 4.3");
-    pythia->readString("6:m0 = 173.5");
-    pythia->readString("6:onMode = off");
-    pythia->readString("6:onIfAny = 24");
-    pythia->readString("6:offIfAny = 1 3");
-    pythia->readString("24:m0 = 80.385");
-    pythia->readString("24:onMode = off");
-    pythia->readString("24:onIfAny = 11 13");
-}
-
 int main(int argc, char* argv[]) {
     std::string appname = "ttbar";
     if (argc != 3) {
@@ -31,10 +15,9 @@ int main(int argc, char* argv[]) {
 
     // Generator.
     Pythia8::Pythia pythia;
-    pythiaSettings(&pythia);
+    pythia.readFile("ttbar.cmnd");
 
     // Switch off generation of steps subsequent to the process level one.
-    // (These will not be stored anyway, so only steal time.)
     pythia.readString("PartonLevel:all = off");
 
     // Create an LHAup object that can access relevant information in pythia.
@@ -43,8 +26,7 @@ int main(int argc, char* argv[]) {
     // Open a file on which LHEF events should be stored, and write header.
     myLHA.openLHEF(lhefile);
 
-    // LHC 14 TeV initialization.
-    pythia.readString("Beams:eCM = 14000.0");
+    // Initialization.
     pythia.init();
 
     // Store initialization info in the LHAup object.
@@ -55,7 +37,7 @@ int main(int argc, char* argv[]) {
 
     int nevent = std::atoi(argv[2]);
     // Loop over events.
-    for (int i = 0; i < nevent; ++i) {
+    for (int i = 0; i != nevent; ++i) {
         // Generate an event.
         pythia.next();
 
