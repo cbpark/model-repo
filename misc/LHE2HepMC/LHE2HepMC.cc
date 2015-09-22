@@ -1,9 +1,9 @@
-#include "Pythia8/Pythia.h"
-#include "Pythia8Plugins/HepMC2.h"
 #include <iostream>
 #include <string>
+#include "Pythia8/Pythia.h"
+#include "Pythia8Plugins/HepMC2.h"
 
-void PythiaSettings(Pythia8::Pythia *pythia) {
+void PythiaSettings(Pythia8::Pythia* pythia) {
     // No automatic event listings - do it manually below.
     pythia->readString("Next:numberShowLHA = 0");
     pythia->readString("Next:numberShowInfo = 0");
@@ -17,7 +17,8 @@ void PythiaSettings(Pythia8::Pythia *pythia) {
 int main(int argc, char* argv[]) {
     std::string appname = "LHE2HepMC";
     if (argc != 3) {
-        std::cerr << " Usage: " << appname << " input" << " nevent\n"
+        std::cerr << " Usage: " << appname << " input"
+                  << " nevent\n"
                   << " input - input file in LHE format\n"
                   << "         the output file will input.hepmc\n"
                   << " nevent - number of events to produce\n"
@@ -54,7 +55,7 @@ int main(int argc, char* argv[]) {
     int nAbort = 1000;
     int iAbort = 0;
     // Begin event loop. Generate event. Skip if error.
-    for (int iEvent = 0; iEvent < nEvent; ++iEvent) {
+    for (int iEvent = 0; iEvent != nEvent; ++iEvent) {
         // Generate event.
         if (!pythia.next()) {
             // If failure because reached end of file then exit event loop.

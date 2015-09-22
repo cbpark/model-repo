@@ -1,38 +1,6 @@
-#include "Pythia8/Pythia.h"
 #include <iostream>
 #include <string>
-
-void pythiaSettings(Pythia8::Pythia *pythia) {
-    // Process selection.
-    pythia->readString("Higgs:useBSM = on");
-    pythia->readString("HiggsBSM:gg2H2 = on");
-
-    // parameters
-    pythia->readString("35:m0 = 400.0");
-    pythia->readString("35:onMode = off");
-    pythia->readString("35:onIfAll 25");
-    pythia->readString("HiggsH2:coup2W = 0.0");
-    pythia->readString("HiggsH2:coup2Z = 0.0");
-    pythia->readString("HiggsH2:coup2u = 0.000001");
-    pythia->readString("HiggsH2:coup2d = 0.000001");
-    pythia->readString("HiggsH2:coup2l = 0.0");
-    pythia->readString("HiggsH2:coup2H1H1 = 0.07");
-    pythia->readString("36:m0 = 1000.0");  // disable H_20 -> A Z
-
-    pythia->readString("Higgs:cubicWidth = on");
-    pythia->readString("25:m0 = 125.0");
-    pythia->readString("25:onMode = off");
-    pythia->readString("25:onIfAny = 5 24");
-
-    pythia->readString("24:m0 = 80.385");
-    pythia->readString("24:onMode = off");
-    pythia->readString("24:onIfAny = 11 13");
-
-    pythia->readString("5:m0 = 4.3");
-    pythia->readString("6:m0 = 173.5");
-    pythia->readString("15:m0 = 1.77682");
-    pythia->readString("23:m0 = 91.1876");
-}
+#include "Pythia8/Pythia.h"
 
 int main(int argc, char* argv[]) {
     std::string appname = "gg_H_hh";
@@ -47,10 +15,9 @@ int main(int argc, char* argv[]) {
 
     // Generator.
     Pythia8::Pythia pythia;
-    pythiaSettings(&pythia);
+    pythia.readFile("gg_H_hh.cmnd");
 
     // Switch off generation of steps subsequent to the process level one.
-    // (These will not be stored anyway, so only steal time.)
     pythia.readString("PartonLevel:all = off");
 
     // Create an LHAup object that can access relevant information in pythia.
@@ -59,8 +26,7 @@ int main(int argc, char* argv[]) {
     // Open a file on which LHEF events should be stored, and write header.
     myLHA.openLHEF(lhefile);
 
-    // LHC 14 TeV initialization.
-    pythia.readString("Beams:eCM = 14000.0");
+    // Initialization.
     pythia.init();
 
     // Store initialization info in the LHAup object.
@@ -71,7 +37,7 @@ int main(int argc, char* argv[]) {
 
     int nevent = std::atoi(argv[2]);
     // Loop over events.
-    for (int i = 0; i < nevent; ++i) {
+    for (int i = 0; i != nevent; ++i) {
         // Generate an event.
         pythia.next();
 

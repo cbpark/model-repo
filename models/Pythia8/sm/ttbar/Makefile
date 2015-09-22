@@ -11,7 +11,7 @@ LDFLAGS += -L$(PYTHIA)/lib -lpythia8 -Wl,-rpath $(PYTHIA)/lib
 all: ttbar
 
 ttbar: ttbar.cc
-	$(CXX) $^ -o $@ $(CXXFLAGS) $(CXX11) $(LDFLAGS)
+	$(CXX) $^ -o $@ $(CXXFLAGS) $(LDFLAGS)
 
 clean:
 	rm -rf *.dSYM

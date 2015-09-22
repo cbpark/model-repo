@@ -1,17 +1,9 @@
 Usage
 =====
 
-* [Pythia 8](http://home.thep.lu.se/~torbjorn/Pythia.html) with the version >= 8.2 must be installed.
+* [PYTHIA 8](http://home.thep.lu.se/~torbjorn/Pythia.html) with the version >= 8.2 must be installed.
 
-* Generate `Makefile.inc` using `configure`. For example, if `Pythia8` is located in `/usr/local`,
-
-```
-./configure --enable-64bit --enable-shared --prefix=/usr/local
-```
-
-`configure --help` will show other options.
-
-* Edit `gg_H_hh.cc`.
+* Edit `Makefile`.
 
 * Run `make`.
 

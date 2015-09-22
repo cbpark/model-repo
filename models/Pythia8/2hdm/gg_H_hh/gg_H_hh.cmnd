@@ -1,0 +1,41 @@
+Beams:eCM = 14000.0
+
+# Process selection.
+Higgs:useBSM = on
+HiggsBSM:gg2H2 = on
+
+# parameters
+35:m0 = 400.0
+35:onMode = off
+35:onIfAll 25
+HiggsH2:coup2W = 0.0
+HiggsH2:coup2Z = 0.0
+HiggsH2:coup2u = 0.000001
+HiggsH2:coup2d = 0.000001
+HiggsH2:coup2l = 0.0
+HiggsH2:coup2H1H1 = 0.07
+# disable H_20 -> A Z
+36:m0 = 1000.0
+
+# Higgs
+Higgs:cubicWidth = on
+25:m0 = 125.0
+25:onMode = off
+25:onIfAny = 5 24
+
+# W boson
+24:m0 = 80.385
+24:onMode = off
+24:onIfAny = 11 13
+
+# b quark
+5:m0 = 4.3
+
+# top quark
+6:m0 = 173.5
+
+# tau
+15:m0 = 1.77682
+
+# Z boson
+23:m0 = 91.1876
