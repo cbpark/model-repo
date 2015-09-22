@@ -25,4 +25,5 @@ gg_h_tautau_parton: gg_h_tautau_parton.cc
 	-I$(CLHEF)/include -L$(CLHEF)/lib -lCLHEF -Wl,-rpath $(CLHEF)/lib
 
 clean:
+	rm -rf *.dSYM
 	rm -f gg_h_tautau_parton
