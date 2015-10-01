@@ -16,14 +16,32 @@ LDFLAGS += -L$(PYTHIA)/lib -lpythia8 -Wl,-rpath $(PYTHIA)/lib
 # CLHEF (https://github.com/cbpark/CLHEF)
 CLHEF = /usr/local
 
+# FastJet
+FASTJET = /usr/local
+FASTJETINC = -I$(FASTJET)/include
+
 .PHONY: all clean
 
-all: qqbar_zh_parton
+all: qqbar_zh_parton qqbar_zh_jet
 
 qqbar_zh_parton: qqbar_zh_parton.cc
 	$(CXX) $^ -o $@ $(CXXFLAGS) $(CXX11) $(LDFLAGS) \
 	-I$(CLHEF)/include -L$(CLHEF)/lib -lCLHEF -Wl,-rpath $(CLHEF)/lib
 
+qqbar_zh_jet: qqbar_zh_jet.o hadron_level_data.o jet_level_data.o
+	$(CXX) $(LDFLAGS) $^ -o $@ \
+	-L$(FASTJET)/lib -lfastjettools -lfastjet -lfastjetplugins -lsiscone_spherical -lsiscone \
+	-Wl,-rpath,$(FASTJET)/lib
+
+qqbar_zh_jet.o: qqbar_zh_jet.cc
+	$(CXX) $(CXXFLAGS) $(CXX11) -I$(FASTJET)/include -o $@ -c $<
+
+hadron_level_data.o: hadron_level_data.cc
+	$(CXX) $(CXXFLAGS) $(CXX11) -o $@ -c $<
+
+jet_level_data.o: jet_level_data.cc
+	$(CXX) $(CXXFLAGS) $(CXX11) -o $@ -c $<
+
 clean:
-	rm -rf *.dSYM
-	rm -f qqbar_zh_parton
+	rm -rf *.dSYM *.o
+	rm -f qqbar_zh_parton qqbar_zh_jet

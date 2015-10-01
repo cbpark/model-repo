@@ -5,8 +5,11 @@
 *~
 .#*
 .swp
-
+GPATH
+GRTAGS
+GTAGS
 Makefile.inc
+*.lhco
 *.lhe
 *.log
 *.pylog
