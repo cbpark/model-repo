@@ -1,18 +1,21 @@
 #include "jet_level_data.h"
 #include <algorithm>
+#include <functional>
 #include <iterator>
 #include <map>
 #include <memory>
+#include <utility>
 #include <vector>
 #include "Pythia8/Pythia.h"
 #include "hadron_level_data.h"
 
 using Pythia8::Particle;
 using fastjet::PseudoJet;
+using fastjet::ClusterSequence;
 using PseudoJets = std::vector<PseudoJet>;
 
 PseudoJet py2FjInput(const Particle& p) {
-    fastjet::PseudoJet fjInput(p.px(), p.py(), p.pz(), p.e());
+    PseudoJet fjInput(p.px(), p.py(), p.pz(), p.e());
     fjInput.set_user_index(p.id());
     return fjInput;
 }
@@ -26,59 +29,98 @@ PseudoJets isolatedObjects(const std::map<int, Particle>& ls) {
     return fastjet::sorted_by_pt(ljets);
 }
 
-PseudoJets getJets(const HadronLevelData& hadrons) {
+std::pair<PseudoJets, std::unique_ptr<ClusterSequence>> jetObjects(
+    const HadronLevelData& hadrons) {
     PseudoJets particles;
     for (const auto& h : hadrons.others) particles.push_back(py2FjInput(h));
 
     fastjet::JetDefinition jetDef(fastjet::antikt_algorithm, 0.5,
                                   fastjet::E_scheme, fastjet::Best);
-    fastjet::ClusterSequence clusterSeq(particles, jetDef);
+    auto clusterSeq = std::unique_ptr<ClusterSequence>(
+        new ClusterSequence(particles, jetDef));
 
-    PseudoJets jets = clusterSeq.inclusive_jets(5.0);
+    // Central hard jets.
+    PseudoJets jets = clusterSeq->inclusive_jets(20.0);
     jets.erase(std::remove_if(jets.begin(), jets.end(), [](const PseudoJet& j) {
                    return std::fabs(j.eta()) > 2.5;
                }), jets.end());
+    return std::make_pair(jets, std::move(clusterSeq));
+}
 
-    return jets;
-};
-
-std::pair<PseudoJets, PseudoJets> bTag(const std::vector<Particle>& bquarks,
-                                       const PseudoJets& jets, double coneR) {
-    PseudoJets candidates = jets;
-    if (!candidates.empty()) {
+void bTagging(PseudoJets* jets, const std::vector<Particle>& bquarks,
+              double coneR) {
+    if (!jets->empty()) {
         for (const auto& b : bquarks) {
-            if (b.pT() < 5.0 || fabs(b.eta()) > 2.5) continue;
+            if (b.pT() < 20.0 || fabs(b.eta()) > 2.5) continue;
 
             PseudoJet bquark(b.px(), b.py(), b.pz(), b.e());
             auto j = std::min_element(
-                candidates.begin(), candidates.end(),
+                jets->begin(), jets->end(),
                 [&bquark](const PseudoJet& j1, const PseudoJet& j2) {
                     return j1.delta_R(bquark) < j2.delta_R(bquark);
                 });
-            if (j->delta_R(bquark) < coneR)
-                j->set_user_index(j->user_index() + 1);
+            if (j->delta_R(bquark) < coneR) j->set_user_index(5);
         }
     }
-
-    PseudoJets bJets, normalJets;
-    std::partition_copy(candidates.begin(), candidates.end(),
-                        std::back_inserter(bJets),
-                        std::back_inserter(normalJets),
-                        [](const PseudoJet& j) { return j.user_index() > 0; });
-    return std::make_pair(bJets, normalJets);
 }
 
-// bool tauTag(const PseudoJet& jet, double pTthres) {
-//     auto constituents = jet.constituents();
+int charge(const PseudoJet& j) {
+    int id = j.user_index();
+    if (id == -11 || id == -13 || id == 211 || id == 321 || id == 2212)
+        return 1;
+    else if (id == 11 || id == 13 || id == -211 || id == -321 || id == -2212)
+        return -1;
+    else
+        return 0;
+}
 
-//     // find the hardest prong
-//     auto hardest =
-//         *std::max_element(constituents.begin(), constituents.end(),
-//                           [](const PseudoJet& c1, const PseudoJet& c2) {
-//                               return c1.pt() < c2.pt();
-//                           });
-//     return false;
-// }
+PseudoJets filterConstituents(const PseudoJets& constituents,
+                              std::function<bool(const PseudoJet&)> pred) {
+    PseudoJets filtered;
+    std::copy_if(constituents.cbegin(), constituents.cend(),
+                 std::back_inserter(filtered), pred);
+    return filtered;
+}
+
+bool isTauJet(const PseudoJet& jet, const ClusterSequence& clusterSeq,
+              double pTthres) {
+    if (jet.pt() < pTthres) return false;
+
+    PseudoJets constituents = clusterSeq.constituents(jet);
+    PseudoJets charged = filterConstituents(
+        constituents, [](const PseudoJet& c) { return charge(c) != 0; });
+    if (charged.empty()) return false;
+
+    // The seed is the hardest charged particle in the jet.
+    auto hardest =
+        *std::max_element(charged.cbegin(), charged.cend(),
+                          [](const PseudoJet& c1, const PseudoJet& c2) {
+                              return c1.pt() < c2.pt();
+                          });
+
+    // Seed must be hard enough and close to the jet vector.
+    if (hardest.pt() < 5.0 || hardest.delta_R(jet) > 0.1) return false;
+
+    // No charged hard tracks near the seed.
+    PseudoJets chargedNear =
+        filterConstituents(charged, [hardest](const PseudoJet& c) {
+            if (c.pt() < 1.0) return false;
+            double dR = hardest.delta_R(c);
+            return dR > 0.07 && dR < 0.4;
+        });
+    if (!chargedNear.empty()) return false;
+
+    // No hard photons near the seed.
+    PseudoJets photonNear =
+        filterConstituents(constituents, [hardest](const PseudoJet& c) {
+            if (c.user_index() != 22 || c.pt() < 1.5) return false;
+            double dR = hardest.delta_R(c);
+            return dR > 0.07 && dR < 0.4;
+        });
+    if (!photonNear.empty()) return false;
+
+    return true;
+}
 
 JetLevelData reconstructObjects(const HadronLevelData& hadrons) {
     JetLevelData objs;
@@ -87,12 +129,36 @@ JetLevelData reconstructObjects(const HadronLevelData& hadrons) {
     objs.electrons = isolatedObjects(hadrons.electrons);
     objs.muons = isolatedObjects(hadrons.muons);
 
-    auto clusteredJets = getJets(hadrons);
-    for (auto& j : clusteredJets) j.set_user_index(0);
+    auto jetobjs = jetObjects(hadrons);
+    auto jets = jetobjs.first;
+    for (auto& j : jets) j.set_user_index(0);
 
-    auto btagged = bTag(hadrons.bPartons, clusteredJets, 0.5);
-    objs.bJets = btagged.first;
-    // auto normalJets = btagged.second;
+    // b tagging.
+    bTagging(&jets, hadrons.bPartons, 0.5);
+
+    PseudoJets normalJets;
+    for (const auto& j : jets) {
+        if (j.user_index() == 5)
+            objs.bJets.push_back(j);
+        else
+            normalJets.push_back(j);
+    }
+
+    auto clusterSeq = std::move(jetobjs.second);
+    std::partition_copy(
+        normalJets.begin(), normalJets.end(), std::back_inserter(objs.taus),
+        std::back_inserter(objs.jets), [&clusterSeq](const PseudoJet& j) {
+            return isTauJet(j, *clusterSeq, 20.0);
+        });
+
+    std::cout << "---\n";
+    std::cout << "# of photon = " << objs.photons.size() << '\n';
+    std::cout << "# of electron = " << objs.electrons.size() << '\n';
+    std::cout << "# of muon = " << objs.muons.size() << '\n';
+    std::cout << "# of tau = " << objs.taus.size() << '\n';
+    std::cout << "# of jet = " << objs.jets.size() << '\n';
+    std::cout << "# of bjet = " << objs.bJets.size() << '\n';
+    std::cout << "---\n";
 
     return objs;
 }

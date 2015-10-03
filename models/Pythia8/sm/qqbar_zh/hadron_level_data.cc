@@ -10,15 +10,6 @@
 using Pythia8::Event;
 using Pythia8::Particle;
 
-bool isNeutrino(const Particle& p) {
-    auto id = p.idAbs();
-    return id == 12 || id == 14 || id == 16;
-}
-
-bool isHardCentral(const Particle& p, double ptMin, double etaMax) {
-    return p.pT() > ptMin && std::fabs(p.eta()) < etaMax;
-}
-
 bool isolated(const std::pair<int, Particle>& p, const HadronLevelData& f,
               double isoR, double isoFrac) {
     std::vector<Particle> allOthers = f.allParticlesExcept(p.first);
@@ -55,6 +46,15 @@ void restoreNonIsolated(HadronLevelData* f) {
     auto muons = f->muons;
     restoreNonIsolated_(&muons, 0.3, 0.1);
     f->muons = muons;
+}
+
+bool isNeutrino(const Particle& p) {
+    auto id = p.idAbs();
+    return id == 12 || id == 14 || id == 16;
+}
+
+bool isHardCentral(const Particle& p, double ptMin, double etaMax) {
+    return p.pT() > ptMin && std::fabs(p.eta()) < etaMax;
 }
 
 std::pair<HadronLevelData, double> getHadronLevelData(const Event& ev) {

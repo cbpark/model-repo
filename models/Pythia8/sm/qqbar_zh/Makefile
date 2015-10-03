@@ -1,5 +1,5 @@
 CXX = c++
-CXXFLAGS += -Wall -g -O2 -I.
+CXXFLAGS += -Wall -Wextra -g -O2 -I.
 
 # Flags for C++11
 CXX11 = -std=c++11
@@ -18,7 +18,6 @@ CLHEF = /usr/local
 
 # FastJet
 FASTJET = /usr/local
-FASTJETINC = -I$(FASTJET)/include
 
 .PHONY: all clean
 
@@ -34,13 +33,13 @@ qqbar_zh_jet: qqbar_zh_jet.o hadron_level_data.o jet_level_data.o
 	-Wl,-rpath,$(FASTJET)/lib
 
 qqbar_zh_jet.o: qqbar_zh_jet.cc
-	$(CXX) $(CXXFLAGS) $(CXX11) -I$(FASTJET)/include -o $@ -c $<
+	$(CXX) $(CXXFLAGS) $(CXX11) -o $@ -c $<
 
 hadron_level_data.o: hadron_level_data.cc
 	$(CXX) $(CXXFLAGS) $(CXX11) -o $@ -c $<
 
 jet_level_data.o: jet_level_data.cc
-	$(CXX) $(CXXFLAGS) $(CXX11) -o $@ -c $<
+	$(CXX) $(CXXFLAGS) $(CXX11) -I$(FASTJET)/include -o $@ -c $<
 
 clean:
 	rm -rf *.dSYM *.o

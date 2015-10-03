@@ -28,4 +28,4 @@ TauDecays:tauMother = 25
 15:9:meMode = 1543
 
 # Print out event logs.
-Next:numberShowEvent = 5
+Next:numberShowEvent = 10
