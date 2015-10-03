@@ -40,7 +40,7 @@ std::pair<PseudoJets, std::unique_ptr<ClusterSequence>> jetObjects(
         new ClusterSequence(particles, jetDef));
 
     // Central hard jets.
-    PseudoJets jets = clusterSeq->inclusive_jets(20.0);
+    PseudoJets jets = clusterSeq->inclusive_jets(10.0);
     jets.erase(std::remove_if(jets.begin(), jets.end(), [](const PseudoJet& j) {
                    return std::fabs(j.eta()) > 2.5;
                }), jets.end());
@@ -51,7 +51,7 @@ void bTagging(PseudoJets* jets, const std::vector<Particle>& bquarks,
               double coneR) {
     if (!jets->empty()) {
         for (const auto& b : bquarks) {
-            if (b.pT() < 20.0 || fabs(b.eta()) > 2.5) continue;
+            if (b.pT() < 10.0 || fabs(b.eta()) > 2.5) continue;
 
             PseudoJet bquark(b.px(), b.py(), b.pz(), b.e());
             auto j = std::min_element(
@@ -106,7 +106,7 @@ bool isTauJet(const PseudoJet& jet, const ClusterSequence& clusterSeq,
         filterConstituents(charged, [hardest](const PseudoJet& c) {
             if (c.pt() < 1.0) return false;
             double dR = hardest.delta_R(c);
-            return dR > 0.07 && dR < 0.4;
+            return dR > 0.07 && dR < 0.45;
         });
     if (!chargedNear.empty()) return false;
 
@@ -115,14 +115,16 @@ bool isTauJet(const PseudoJet& jet, const ClusterSequence& clusterSeq,
         filterConstituents(constituents, [hardest](const PseudoJet& c) {
             if (c.user_index() != 22 || c.pt() < 1.5) return false;
             double dR = hardest.delta_R(c);
-            return dR > 0.07 && dR < 0.4;
+            return dR > 0.07 && dR < 0.45;
         });
     if (!photonNear.empty()) return false;
 
     return true;
 }
 
-JetLevelData reconstructObjects(const HadronLevelData& hadrons) {
+JetLevelData reconstructObjects(
+    const std::pair<HadronLevelData, double>& hadronData) {
+    HadronLevelData hadrons = hadronData.first;
     JetLevelData objs;
 
     objs.photons = isolatedObjects(hadrons.photons);
@@ -144,13 +146,17 @@ JetLevelData reconstructObjects(const HadronLevelData& hadrons) {
     fastjet::sorted_by_pt(objs.bJets);
 
     auto clusterSeq = std::move(jetobjs.second);
+    // Choose tau jet.
     std::partition_copy(
         normalJets.cbegin(), normalJets.cend(), std::back_inserter(objs.taus),
         std::back_inserter(objs.jets), [&clusterSeq](const PseudoJet& j) {
-            return isTauJet(j, *clusterSeq, 20.0);
+            return isTauJet(j, *clusterSeq, 15.0);
         });
     fastjet::sorted_by_pt(objs.jets);
     fastjet::sorted_by_pt(objs.taus);
+
+    // Missing energy
+    objs.met = hadronData.second;
 
     return objs;
 }

@@ -62,14 +62,12 @@ std::pair<HadronLevelData, double> getHadronLevelData(const Event& ev) {
     Pythia8::Vec4 missingETvec(0.0, 0.0, 0.0, 0.0);
     for (int i = 0; i != ev.size(); ++i) {
         auto particle = ev[i];
-        auto pid = particle.idAbs();
 
+        auto pid = particle.idAbs();
         if (particle.status() == -23) {
-            if (pid == 5 && ev[particle.mother1()].idAbs() == 23) {
-                // b quarks from the Z boson
+            if (pid == 5) {
                 hadronLevel.bPartons.push_back(particle);
-            } else if (pid == 15 && ev[particle.mother1()].idAbs() == 25) {
-                // taus from the Higgs boson
+            } else if (pid == 15) {
                 hadronLevel.tauLeptons.push_back(particle);
             }
         }
@@ -84,13 +82,13 @@ std::pair<HadronLevelData, double> getHadronLevelData(const Event& ev) {
         // Missing ET
         missingETvec -= particle.p();
 
-        if (pid == 22 && isHardCentral(particle, 20.0, 2.5)) {
+        if (pid == 22 && isHardCentral(particle, 15.0, 2.5)) {
             hadronLevel.photons.emplace(i, particle);
             continue;
-        } else if (pid == 11 && isHardCentral(particle, 20.0, 2.5)) {
+        } else if (pid == 11 && isHardCentral(particle, 15.0, 2.5)) {
             hadronLevel.electrons.emplace(i, particle);
             continue;
-        } else if (pid == 13 && isHardCentral(particle, 20.0, 2.5)) {
+        } else if (pid == 13 && isHardCentral(particle, 15.0, 2.5)) {
             hadronLevel.muons.emplace(i, particle);
             continue;
         }

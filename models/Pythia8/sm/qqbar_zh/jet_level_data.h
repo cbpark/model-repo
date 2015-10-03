@@ -1,6 +1,7 @@
 #ifndef MODELS_PYTHIA8_SM_QQBAR_ZH_JET_LEVEL_DATA_H_
 #define MODELS_PYTHIA8_SM_QQBAR_ZH_JET_LEVEL_DATA_H_
 
+#include <utility>
 #include <vector>
 #include "fastjet/PseudoJet.hh"
 #include "fastjet/ClusterSequence.hh"
@@ -13,8 +14,10 @@ struct JetLevelData {
     std::vector<fastjet::PseudoJet> taus;
     std::vector<fastjet::PseudoJet> jets;
     std::vector<fastjet::PseudoJet> bJets;
+    double met;
 };
 
-JetLevelData reconstructObjects(const HadronLevelData& hadrons);
+JetLevelData reconstructObjects(
+    const std::pair<HadronLevelData, double>& hadronData);
 
 #endif  // MODELS_PYTHIA8_SM_QQBAR_ZH_JET_LEVEL_DATA_H_

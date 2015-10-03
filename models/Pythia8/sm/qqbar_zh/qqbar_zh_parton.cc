@@ -6,6 +6,8 @@
 #include "Pythia8/Pythia.h"
 #include "CLHEF/lhef.h"
 
+using std::vector;
+
 int main(int argc, char* argv[]) {
     std::string appname = "qqbar_zh_parton";
     if (argc != 3) {
@@ -26,9 +28,8 @@ int main(int argc, char* argv[]) {
     outfile << lhef::openingLine() << '\n';
     lhef::GlobalInfo info(pythia.info.idA(), pythia.info.idB(),
                           pythia.info.eA(), pythia.info.eB(), 0, 0, 3, 0, 0, 1,
-                          std::vector<double>({0.0}),
-                          std::vector<double>({0.0}),
-                          std::vector<double>({1.0}), std::vector<int>({1}));
+                          vector<double>({0.0}), vector<double>({0.0}),
+                          vector<double>({1.0}), vector<int>({1}));
     outfile << info << '\n';
 
     int nevent = std::atoi(argv[2]);
@@ -58,7 +59,7 @@ int main(int argc, char* argv[]) {
                 // - This may contain pi0, which will eventually decay
                 //   into photons. Hence, pi0 can be considered as a
                 //   visible particle.
-                std::vector<int> daughters = p.daughterList();
+                vector<int> daughters = p.daughterList();
                 for (const auto& d : daughters) {
                     auto daughter = pythia.event.at(d);
                     int motherline = daughter.mother1();
