@@ -137,7 +137,7 @@ JetLevelData reconstructObjects(const HadronLevelData& hadrons) {
     bTagging(&jets, hadrons.bPartons, 0.5);
 
     PseudoJets normalJets;
-    std::partition_copy(jets.begin(), jets.end(),
+    std::partition_copy(jets.cbegin(), jets.cend(),
                         std::back_inserter(objs.bJets),
                         std::back_inserter(normalJets),
                         [](const PseudoJet& j) { return j.user_index() == 5; });
@@ -145,7 +145,7 @@ JetLevelData reconstructObjects(const HadronLevelData& hadrons) {
 
     auto clusterSeq = std::move(jetobjs.second);
     std::partition_copy(
-        normalJets.begin(), normalJets.end(), std::back_inserter(objs.taus),
+        normalJets.cbegin(), normalJets.cend(), std::back_inserter(objs.taus),
         std::back_inserter(objs.jets), [&clusterSeq](const PseudoJet& j) {
             return isTauJet(j, *clusterSeq, 20.0);
         });

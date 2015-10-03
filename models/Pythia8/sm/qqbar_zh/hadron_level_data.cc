@@ -12,7 +12,7 @@ using Pythia8::Particle;
 
 bool isolated(const std::pair<int, Particle>& p, const HadronLevelData& f,
               double isoR, double isoFrac) {
-    std::vector<Particle> allOthers = f.allParticlesExcept(p.first);
+    auto allOthers = f.allParticlesExcept(p.first);
     double sumPtInCone = 0.0;
     auto candidate = p.second;
     for (const auto& other : allOthers) {
@@ -23,8 +23,8 @@ bool isolated(const std::pair<int, Particle>& p, const HadronLevelData& f,
 }
 
 void restoreNonIsolated(HadronLevelData* f) {
-    auto restoreNonIsolated_ = [&f](std::map<int, Pythia8::Particle>* ps,
-                                    double isoR, double isoFrac) {
+    auto restoreNonIsolated_ = [&f](std::map<int, Particle>* ps, double isoR,
+                                    double isoFrac) {
         for (auto p = ps->begin(); p != ps->end();) {
             if (!isolated(*p, *f, isoR, isoFrac)) {
                 f->others.push_back(p->second);
