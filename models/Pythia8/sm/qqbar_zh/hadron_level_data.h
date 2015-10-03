@@ -17,17 +17,17 @@ struct HadronLevelData {
 
     std::vector<Pythia8::Particle> allParticlesExcept(int i) const {
         std::vector<Pythia8::Particle> ps;
-        for (const auto& p : photons) {
-            if (p.first == i) continue;
-            ps.push_back(p.second);
-        }
-        for (const auto& p : muons) {
-            if (p.first == i) continue;
-            ps.push_back(p.second);
-        }
-        for (const auto& p : others) {
-            ps.push_back(p);
-        }
+        auto insert_ = [&ps, i](const std::map<int, Pythia8::Particle>& ls) {
+            for (const auto& l : ls) {
+                if (l.first == i) continue;
+                ps.push_back(l.second);
+            }
+        };
+
+        insert_(photons);
+        insert_(electrons);
+        insert_(muons);
+        ps.insert(ps.end(), others.begin(), others.end());
         return ps;
     }
 };
