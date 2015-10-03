@@ -137,12 +137,11 @@ JetLevelData reconstructObjects(const HadronLevelData& hadrons) {
     bTagging(&jets, hadrons.bPartons, 0.5);
 
     PseudoJets normalJets;
-    for (const auto& j : jets) {
-        if (j.user_index() == 5)
-            objs.bJets.push_back(j);
-        else
-            normalJets.push_back(j);
-    }
+    std::partition_copy(jets.begin(), jets.end(),
+                        std::back_inserter(objs.bJets),
+                        std::back_inserter(normalJets),
+                        [](const PseudoJet& j) { return j.user_index() == 5; });
+    fastjet::sorted_by_pt(objs.bJets);
 
     auto clusterSeq = std::move(jetobjs.second);
     std::partition_copy(
@@ -150,15 +149,8 @@ JetLevelData reconstructObjects(const HadronLevelData& hadrons) {
         std::back_inserter(objs.jets), [&clusterSeq](const PseudoJet& j) {
             return isTauJet(j, *clusterSeq, 20.0);
         });
-
-    std::cout << "---\n";
-    std::cout << "# of photon = " << objs.photons.size() << '\n';
-    std::cout << "# of electron = " << objs.electrons.size() << '\n';
-    std::cout << "# of muon = " << objs.muons.size() << '\n';
-    std::cout << "# of tau = " << objs.taus.size() << '\n';
-    std::cout << "# of jet = " << objs.jets.size() << '\n';
-    std::cout << "# of bjet = " << objs.bJets.size() << '\n';
-    std::cout << "---\n";
+    fastjet::sorted_by_pt(objs.jets);
+    fastjet::sorted_by_pt(objs.taus);
 
     return objs;
 }

@@ -30,6 +30,12 @@ int main(int argc, char* argv[]) {
         auto event = pythia.event;
         auto hadronLevel = getHadronLevelData(event);
         auto jetLevel = reconstructObjects(hadronLevel.first);
+        outfile << "# of photon = " << jetLevel.photons.size() << '\n';
+        outfile << "# of electron = " << jetLevel.electrons.size() << '\n';
+        outfile << "# of muon = " << jetLevel.muons.size() << '\n';
+        outfile << "# of tau = " << jetLevel.taus.size() << '\n';
+        outfile << "# of jet = " << jetLevel.jets.size() << '\n';
+        outfile << "# of bjet = " << jetLevel.bJets.size() << '\n';
         double missingET = hadronLevel.second;
         outfile << missingET << '\n';
     }
