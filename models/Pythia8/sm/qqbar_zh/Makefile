@@ -37,7 +37,7 @@ qqbar_zh_jet: qqbar_zh_jet.o hadron_level_data.o jet_level_data.o
 	-Wl,-rpath,$(FASTJET)/lib
 
 qqbar_zh_jet.o: qqbar_zh_jet.cc
-	$(CXX) $(CXXFLAGS) $(CXX11) -I$(CLHCO)/include -o $@ -c $<
+	$(CXX) $(CXXFLAGS) $(CXX11) -I$(FASTJET)/include -I$(CLHCO)/include -o $@ -c $<
 
 hadron_level_data.o: hadron_level_data.cc
 	$(CXX) $(CXXFLAGS) $(CXX11) -o $@ -c $<
