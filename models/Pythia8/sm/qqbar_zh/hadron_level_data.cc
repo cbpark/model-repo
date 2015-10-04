@@ -57,9 +57,9 @@ bool isHardCentral(const Particle& p, double ptMin, double etaMax) {
     return p.pT() > ptMin && std::fabs(p.eta()) < etaMax;
 }
 
-std::pair<HadronLevelData, double> getHadronLevelData(const Event& ev) {
+HadronLevelData getHadronLevelData(const Event& ev) {
     HadronLevelData hadronLevel;
-    Pythia8::Vec4 missingETvec(0.0, 0.0, 0.0, 0.0);
+    Pythia8::Vec4 metVec(0.0, 0.0, 0.0, 0.0);
     for (int i = 0; i != ev.size(); ++i) {
         auto particle = ev[i];
 
@@ -80,7 +80,7 @@ std::pair<HadronLevelData, double> getHadronLevelData(const Event& ev) {
         if (std::fabs(particle.eta()) > 5.0 || particle.pT() < 0.1) continue;
 
         // Missing ET
-        missingETvec -= particle.p();
+        metVec -= particle.p();
 
         if (pid == 22 && isHardCentral(particle, 15.0, 2.5)) {
             hadronLevel.photons.emplace(i, particle);
@@ -95,7 +95,10 @@ std::pair<HadronLevelData, double> getHadronLevelData(const Event& ev) {
 
         hadronLevel.others.push_back(particle);
     }
+
     restoreNonIsolated(&hadronLevel);
 
-    return std::make_pair(hadronLevel, missingETvec.pT());
+    hadronLevel.met = std::make_pair(metVec.pT(), metVec.phi());
+
+    return hadronLevel;
 }

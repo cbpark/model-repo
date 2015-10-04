@@ -14,6 +14,8 @@ struct HadronLevelData {
     std::map<int, Pythia8::Particle> electrons;
     std::map<int, Pythia8::Particle> muons;
     std::vector<Pythia8::Particle> others;
+    // pT and phi of the missing energy vector.
+    std::pair<double, double> met;
 
     std::vector<Pythia8::Particle> allParticlesExcept(int i) const {
         std::vector<Pythia8::Particle> ps;
@@ -32,6 +34,6 @@ struct HadronLevelData {
     }
 };
 
-std::pair<HadronLevelData, double> getHadronLevelData(const Pythia8::Event& ev);
+HadronLevelData getHadronLevelData(const Pythia8::Event& ev);
 
 #endif  // MODELS_PYTHIA8_SM_QQBAR_ZH_HADRON_LEVEL_DATA_H_

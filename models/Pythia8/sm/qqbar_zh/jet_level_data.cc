@@ -14,6 +14,16 @@ using fastjet::PseudoJet;
 using fastjet::ClusterSequence;
 using PseudoJets = std::vector<PseudoJet>;
 
+int charge(const PseudoJet& j) {
+    int id = j.user_index();
+    if (id == -11 || id == -13 || id == 211 || id == 321 || id == 2212)
+        return 1;
+    else if (id == 11 || id == 13 || id == -211 || id == -321 || id == -2212)
+        return -1;
+    else
+        return 0;
+}
+
 PseudoJet py2FjInput(const Particle& p) {
     PseudoJet fjInput(p.px(), p.py(), p.pz(), p.e());
     fjInput.set_user_index(p.id());
@@ -64,16 +74,6 @@ void bTagging(PseudoJets* jets, const std::vector<Particle>& bquarks,
     }
 }
 
-int charge(const PseudoJet& j) {
-    int id = j.user_index();
-    if (id == -11 || id == -13 || id == 211 || id == 321 || id == 2212)
-        return 1;
-    else if (id == 11 || id == 13 || id == -211 || id == -321 || id == -2212)
-        return -1;
-    else
-        return 0;
-}
-
 PseudoJets filterConstituents(const PseudoJets& constituents,
                               std::function<bool(const PseudoJet&)> pred) {
     PseudoJets filtered;
@@ -122,21 +122,18 @@ bool isTauJet(const PseudoJet& jet, const ClusterSequence& clusterSeq,
     return true;
 }
 
-JetLevelData reconstructObjects(
-    const std::pair<HadronLevelData, double>& hadronData) {
-    HadronLevelData hadrons = hadronData.first;
+JetLevelData reconstructObjects(const HadronLevelData& hadronData) {
     JetLevelData objs;
+    objs.photons = isolatedObjects(hadronData.photons);
+    objs.electrons = isolatedObjects(hadronData.electrons);
+    objs.muons = isolatedObjects(hadronData.muons);
 
-    objs.photons = isolatedObjects(hadrons.photons);
-    objs.electrons = isolatedObjects(hadrons.electrons);
-    objs.muons = isolatedObjects(hadrons.muons);
-
-    auto jetobjs = jetObjects(hadrons);
+    auto jetobjs = jetObjects(hadronData);
     auto jets = jetobjs.first;
     for (auto& j : jets) j.set_user_index(0);
 
     // b tagging.
-    bTagging(&jets, hadrons.bPartons, 0.5);
+    bTagging(&jets, hadronData.bPartons, 0.5);
 
     PseudoJets normalJets;
     std::partition_copy(jets.cbegin(), jets.cend(),
@@ -156,7 +153,7 @@ JetLevelData reconstructObjects(
     fastjet::sorted_by_pt(objs.taus);
 
     // Missing energy
-    objs.met = hadronData.second;
+    objs.met = hadronData.met;
 
     return objs;
 }

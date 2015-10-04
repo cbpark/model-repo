@@ -14,10 +14,11 @@ struct JetLevelData {
     std::vector<fastjet::PseudoJet> taus;
     std::vector<fastjet::PseudoJet> jets;
     std::vector<fastjet::PseudoJet> bJets;
-    double met;
+    std::pair<double, double> met;
 };
 
-JetLevelData reconstructObjects(
-    const std::pair<HadronLevelData, double>& hadronData);
+int charge(const fastjet::PseudoJet& j);
+
+JetLevelData reconstructObjects(const HadronLevelData& hadronData);
 
 #endif  // MODELS_PYTHIA8_SM_QQBAR_ZH_JET_LEVEL_DATA_H_

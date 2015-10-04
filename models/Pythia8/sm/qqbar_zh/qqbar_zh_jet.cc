@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
         outfile << "# of tau = " << jetLevel.taus.size() << '\n';
         outfile << "# of jet = " << jetLevel.jets.size() << '\n';
         outfile << "# of bjet = " << jetLevel.bJets.size() << '\n';
-        outfile << "Met = " << jetLevel.met << '\n';
+        outfile << "Met = " << jetLevel.met.first << '\n';
     }
 
     pythia.stat();
