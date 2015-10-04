@@ -140,7 +140,7 @@ JetLevelData reconstructObjects(const HadronLevelData& hadronData) {
                         std::back_inserter(objs.bJets),
                         std::back_inserter(normalJets),
                         [](const PseudoJet& j) { return j.user_index() == 5; });
-    fastjet::sorted_by_pt(objs.bJets);
+    objs.bJets = fastjet::sorted_by_pt(objs.bJets);
 
     auto clusterSeq = std::move(jetobjs.second);
     // Choose tau jet.
@@ -149,8 +149,8 @@ JetLevelData reconstructObjects(const HadronLevelData& hadronData) {
         std::back_inserter(objs.jets), [&clusterSeq](const PseudoJet& j) {
             return isTauJet(j, *clusterSeq, 15.0);
         });
-    fastjet::sorted_by_pt(objs.jets);
-    fastjet::sorted_by_pt(objs.taus);
+    objs.jets = fastjet::sorted_by_pt(objs.jets);
+    objs.taus = fastjet::sorted_by_pt(objs.taus);
 
     // Missing energy
     objs.met = hadronData.met;
