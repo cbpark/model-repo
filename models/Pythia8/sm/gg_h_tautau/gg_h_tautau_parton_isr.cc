@@ -58,10 +58,10 @@ int main(int argc, char* argv[]) {
         for (int ip = 0; ip != event.size(); ++ip) {
             auto p = event[ip];
 
-            if (p.status() == -21) {
+            if (p.statusAbs() == 21) {
                 // incoming particles
                 ps.push_back(toLHEFParticle(-1, 0, 0, p));
-            } else if (p.status() == -62 && p.id() == 25) {
+            } else if (p.statusAbs() == 62 && p.id() == 25) {
                 // Higgs boson
                 ps.push_back(toLHEFParticle(2, 1, 2, p));
             } else if (p.idAbs() == 15 && fromHiggs(p, event)) {
