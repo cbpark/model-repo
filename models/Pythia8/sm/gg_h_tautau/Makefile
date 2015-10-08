@@ -18,12 +18,16 @@ CLHEF = /usr/local
 
 .PHONY: all clean
 
-all: gg_h_tautau_parton
+all: gg_h_tautau_parton gg_h_tautau_parton_isr
 
 gg_h_tautau_parton: gg_h_tautau_parton.cc
 	$(CXX) $^ -o $@ $(CXXFLAGS) $(CXX11) $(LDFLAGS) \
 	-I$(CLHEF)/include -L$(CLHEF)/lib -lCLHEF -Wl,-rpath $(CLHEF)/lib
 
+gg_h_tautau_parton_isr: gg_h_tautau_parton_isr.cc
+	$(CXX) $^ -o $@ $(CXXFLAGS) $(CXX11) $(LDFLAGS) \
+	-I$(CLHEF)/include -L$(CLHEF)/lib -lCLHEF -Wl,-rpath $(CLHEF)/lib
+
 clean:
 	rm -rf *.dSYM
-	rm -f gg_h_tautau_parton
+	rm -f gg_h_tautau_parton gg_h_tautau_parton_isr
