@@ -48,6 +48,14 @@ void restoreNonIsolated(HadronLevelData* f) {
     f->muons = muons;
 }
 
+Particle finalAfterPS(const Particle& p, const Event& ev, int pid) {
+    auto daughter = ev[p.daughter1()];
+    if (daughter.idAbs() == pid)
+        return finalAfterPS(daughter, ev, pid);
+    else
+        return p;
+}
+
 bool isNeutrino(const Particle& p) {
     auto id = p.idAbs();
     return id == 12 || id == 14 || id == 16;
@@ -66,9 +74,11 @@ HadronLevelData getHadronLevelData(const Event& ev) {
         auto pid = particle.idAbs();
         if (particle.status() == -23) {
             if (pid == 5) {
-                hadronLevel.bPartons.push_back(particle);
+                auto bParton = finalAfterPS(particle, ev, pid);
+                hadronLevel.bPartons.push_back(bParton);
             } else if (pid == 15) {
-                hadronLevel.tauLeptons.push_back(particle);
+                auto tauLepton = finalAfterPS(particle, ev, pid);
+                hadronLevel.tauLeptons.push_back(tauLepton);
             }
         }
 

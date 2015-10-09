@@ -1,12 +1,12 @@
 #include "gg_h_tautau_parton.h"
-#include "Pythia8/Pythia.h"
-#include "CLHEF/lhef.h"
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
+#include "Pythia8/Pythia.h"
+#include "CLHEF/lhef.h"
 
-bool fromHiggs(const Pythia8::Particle& p, const Pythia8::Event ev) {
+bool fromHiggs(const Pythia8::Particle& p, const Pythia8::Event& ev) {
     std::vector<int> mothers = p.motherList();
     for (const auto& m : mothers) {
         if (ev[m].idAbs() == 25) return true;
