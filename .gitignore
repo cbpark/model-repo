@@ -14,3 +14,4 @@ Makefile.inc
 *.log
 *.pylog
 *.hepmc
+*.dSYM
