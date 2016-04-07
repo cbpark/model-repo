@@ -11,6 +11,8 @@
 #include "TGenPhaseSpace.h"
 #include "TLorentzVector.h"
 
+using std::vector;
+
 const double D_HS[2] = {0.5, 0.5};
 
 int main(int argc, char* argv[]) {
@@ -34,9 +36,8 @@ int main(int argc, char* argv[]) {
     outfile << lhef::openingLine() << '\n';
     lhef::GlobalInfo info(pythia.info.idA(), pythia.info.idB(),
                           pythia.info.eA(), pythia.info.eB(), 0, 0, 3, 0, 0, 1,
-                          std::vector<double>({0.0}),
-                          std::vector<double>({0.0}),
-                          std::vector<double>({1.0}), std::vector<int>({1}));
+                          vector<double>({0.0}), vector<double>({0.0}),
+                          vector<double>({1.0}), vector<int>({1}));
     outfile << info << '\n';
 
     const int nevent = std::atoi(argv[2]);
@@ -46,7 +47,7 @@ int main(int argc, char* argv[]) {
         if (!pythia.next()) continue;
 
         lhef::Particles ps;
-        std::vector<TLorentzVector> bPartons;
+        vector<TLorentzVector> bPartons;
         for (int ip = 0; ip != pythia.event.size(); ++ip) {
             auto p = pythia.event.at(ip);
             if (p.statusAbs() == 21) {  // incoming particles.
