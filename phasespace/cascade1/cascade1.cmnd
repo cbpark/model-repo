@@ -1,0 +1,22 @@
+PartonLevel:FSR = off
+PartonLevel:ISR = off
+PartonLevel:MPI = off
+HadronLevel:Hadronize = off
+
+## Set random number seed for each run.
+Random:setSeed = on
+Random:seed = 0
+
+## Proton beams
+Beams:idA = 2212
+Beams:idB = 2212
+Beams:frameType = 2  # fixed target
+Beams:eA = 400.0
+Beams:eB = 0.0       # If the particle energy is smaller than its mass
+                     # it is assumed to be at rest.
+
+## Process
+HardQCD:hardbbbar = on
+
+## Parameters
+5:onMode = off

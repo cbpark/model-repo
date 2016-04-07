@@ -1,19 +1,88 @@
 /*
  *  p p --> b1 + b2 --> h s + b2
  */
-#include "TLorentzVector.h"
-#include <cmath>
+#include "cascade1.h"
+#include <fstream>
 #include <iostream>
+#include <string>
+#include <vector>
+#include "CLHEF/lhef.h"
+#include "Pythia8/Pythia.h"
+#include "TGenPhaseSpace.h"
+#include "TLorentzVector.h"
 
-TLorentzVector initProtons(double beamE) {
-    double protonM = 0.938272046;
-    TLorentzVector beam(0.0, 0.0, std::sqrt(beamE * beamE - protonM * protonM),
-                        beamE);
-    TLorentzVector target(0.0, 0.0, 0.0, protonM);
-    return beam + target;
-}
+const double D_HS[2] = {0.5, 0.5};
 
-int main() {
-    TLorentzVector init = initProtons(400.0);
-    init.Print();
+int main(int argc, char* argv[]) {
+    std::string appname = "cascade1";
+    if (argc != 3) {
+        std::cerr << " Usage: " << appname << " output nevent\n"
+                  << " output - output file\n"
+                  << " nevent - number of events\n"
+                  << " ex) " << appname << " test.lhe 100 > test.log\n";
+        return 1;
+    }
+
+    // Generator.
+    Pythia8::Pythia pythia;
+    pythia.readFile("cascade1.cmnd");
+    pythia.init();
+
+    // Output file.
+    ofstream outfile;
+    outfile.open(argv[1]);
+    outfile << lhef::openingLine() << '\n';
+    lhef::GlobalInfo info(pythia.info.idA(), pythia.info.idB(),
+                          pythia.info.eA(), pythia.info.eB(), 0, 0, 3, 0, 0, 1,
+                          std::vector<double>({0.0}),
+                          std::vector<double>({0.0}),
+                          std::vector<double>({1.0}), std::vector<int>({1}));
+    outfile << info << '\n';
+
+    const int nevent = std::atoi(argv[2]);
+    TGenPhaseSpace bDecay;
+    // Loop over events.
+    for (int ieve = 0; ieve != nevent; ++ieve) {
+        if (!pythia.next()) continue;
+
+        lhef::Particles ps;
+        std::vector<TLorentzVector> bPartons;
+        for (int ip = 0; ip != pythia.event.size(); ++ip) {
+            auto p = pythia.event.at(ip);
+            if (p.statusAbs() == 21) {  // incoming particles.
+                ps.push_back(toLHEFParticle(-1, 0, 0, p));
+            } else if (p.statusAbs() == 23 && p.idAbs() == 5) {  // b parton.
+                ps.push_back(toLHEFParticle(2, 1, 2, p));
+                bPartons.push_back(particleMomentum(p));
+            }
+        }
+
+        if (!bPartons.empty()) {
+            bDecay.SetDecay(bPartons[0], 2, D_HS);
+            double weight = bDecay.Generate();
+            auto h2 = toParticle(35, *(bDecay.GetDecay(0)));
+            ps.push_back(toLHEFParticle(1, 3, 3, h2));
+            auto sParton = toParticle(3, *(bDecay.GetDecay(1)));
+            ps.push_back(toLHEFParticle(1, 3, 3, sParton));
+        }
+
+        lhef::EventEntry entry;
+        int i = 1;
+        for (const auto& p : ps) {
+            entry.insert({i, p});
+            ++i;
+        }
+
+        lhef::EventInfo evinfo(ps.size(), 0, pythia.info.weight(),
+                               pythia.info.scalup(), pythia.info.alphaEM(),
+                               pythia.info.alphaS());
+        lhef::Event ev(evinfo, entry);
+        outfile << ev << '\n';
+    }  // event loop.
+
+    outfile << lhef::closingLine();
+    outfile.close();
+
+    // Statistics: full printout.
+    pythia.stat();
 }
