@@ -11,7 +11,7 @@
 #include "TGenPhaseSpace.h"
 #include "TLorentzVector.h"
 
-const double D_HS[2] = {0.5, 0.5};
+const double PROD[2] = {0.5, 0.5};
 
 int main(int argc, char* argv[]) {
     std::string appname = "cascade1";
@@ -46,24 +46,24 @@ int main(int argc, char* argv[]) {
         if (!pythia.next()) continue;
 
         lhef::Particles ps;
-        std::vector<TLorentzVector> bPartons;
+        std::vector<TLorentzVector> bmesons;
         for (int ip = 0; ip != pythia.event.size(); ++ip) {
             auto p = pythia.event.at(ip);
-            if (p.statusAbs() == 21) {  // incoming particles.
+            if (p.status() == -21) {  // incoming particles.
                 ps.push_back(toLHEFParticle(-1, 0, 0, p));
-            } else if (p.statusAbs() == 23 && p.idAbs() == 5) {  // b parton.
+            } else if (p.isFinal() && isBMeson(p)) {  // B meson.
                 ps.push_back(toLHEFParticle(2, 1, 2, p));
-                bPartons.push_back(particleMomentum(p));
+                bmesons.push_back(particleMomentum(p));
             }
         }
 
-        if (!bPartons.empty()) {
-            bDecay.SetDecay(bPartons[0], 2, D_HS);
+        if (!bmesons.empty()) {
+            bDecay.SetDecay(bmesons[0], 2, PROD);
             double weight = bDecay.Generate();
             auto h2 = toParticle(35, *(bDecay.GetDecay(0)));
             ps.push_back(toLHEFParticle(1, 3, 3, h2));
-            auto sParton = toParticle(3, *(bDecay.GetDecay(1)));
-            ps.push_back(toLHEFParticle(1, 3, 3, sParton));
+            auto s = toParticle(3, *(bDecay.GetDecay(1)));
+            ps.push_back(toLHEFParticle(1, 3, 3, s));
         }
 
         lhef::EventEntry entry;

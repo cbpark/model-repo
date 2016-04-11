@@ -1,7 +1,7 @@
-PartonLevel:FSR = off
-PartonLevel:ISR = off
+PartonLevel:FSR = on
+PartonLevel:ISR = on
 PartonLevel:MPI = off
-HadronLevel:Hadronize = off
+HadronLevel:Hadronize = on
 
 ## Set random number seed for each run.
 Random:setSeed = on
@@ -18,5 +18,28 @@ Beams:eB = 0.0       # If the particle energy is smaller than its mass
 ## Process
 HardQCD:hardbbbar = on
 
-## Parameters
-5:onMode = off
+## Decays
+511:onMode   = off
+521:onMode   = off
+10511:onMode = off
+10521:onMode = off
+513:onMode   = off
+523:onMode   = off
+10513:onMode = off
+10523:onMode = off
+20513:onMode = off
+20523:onMode = off
+515:onMode   = off
+525:onMode   = off
+531:onMode   = off
+10531:onMode = off
+533:onMode   = off
+10533:onMode = off
+20533:onMode = off
+535:onMode   = off
+541:onMode   = off
+10541:onMode = off
+543:onMode   = off
+10543:onMode = off
+20543:onMode = off
+545:onMode   = off
