@@ -15,3 +15,4 @@ Makefile.inc
 *.pylog
 *.hepmc
 *.dSYM
+*.exe

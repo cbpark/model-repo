@@ -1,18 +1,15 @@
-CXX = c++
-CXXFLAGS += -Wall -g -O2 -I.
+CXXFLAGS := -g -O2 -Wall -Wextra -pedantic $(CXXFLAGS)
 
 # PYTHIA
-PYTHIA = /usr/local
-CXXFLAGS += -I$(PYTHIA)/include
-LDFLAGS += -L$(PYTHIA)/lib -lpythia8 -Wl,-rpath $(PYTHIA)/lib
+CXXFLAGS += $(shell pythia8-config --cxxflags)
+LDFLAGS  += $(shell pythia8-config --ldflags)
 
 .PHONY: all clean
 
-all: gg_H_hh
+all: gg_H_hh.exe
 
-gg_H_hh: gg_H_hh.cc
-	$(CXX) $^ -o $@ $(CXXFLAGS) $(LDFLAGS)
+gg_H_hh.exe: gg_H_hh.o
+	$(CXX) $(LDFLAGS) -o $@ $^
 
 clean:
-	rm -rf *.dSYM
-	rm -f gg_H_hh
+	rm -f gg_H_hh.o gg_H_hh.exe
