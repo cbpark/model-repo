@@ -16,3 +16,4 @@ Makefile.inc
 *.hepmc
 *.dSYM
 *.exe
+*.gz
