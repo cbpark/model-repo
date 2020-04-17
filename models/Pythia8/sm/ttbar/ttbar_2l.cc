@@ -4,7 +4,7 @@
 #include "Pythia8/Pythia.h"
 
 int main(int argc, char *argv[]) {
-    std::string appname = "ttbar";
+    std::string appname = "ttbar_2l";
     if (argc != 4) {
         std::cerr << " Usage: " << appname << " card output nevent\n"
                   << " card   - the Pythia8 card\n"
@@ -21,6 +21,13 @@ int main(int argc, char *argv[]) {
 
     // Switch off generation of steps subsequent to the process level one.
     pythia.readString("PartonLevel:all = off");
+
+    pythia.readString("6:onMode = off");
+    pythia.readString("6:onIfAny = 24");
+    pythia.readString("6:offIfAny = 1 3");
+
+    pythia.readString("24:onMode = off");
+    pythia.readString("24:onIfAny = 11 13");
 
     // PDF
     std::string pdfset("LHAPDF6:NNPDF31_lo_as_0118");

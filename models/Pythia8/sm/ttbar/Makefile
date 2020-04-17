@@ -1,18 +1,23 @@
-CXX = c++
-CXXFLAGS += -Wall -g -O2 -I.
+CXXFLAGS := -g -O2 -Wall -Wextra -pedantic -I. $(CXXFLAGS)
 
-# PYTHIA
-PYTHIA = /usr/local
-CXXFLAGS += -I$(PYTHIA)/include
-LDFLAGS += -L$(PYTHIA)/lib -lpythia8 -Wl,-rpath $(PYTHIA)/lib
+# Pythia 8
+CXXFLAGS += $(shell pythia8-config --cxxflags)
+LDFLAGS  += $(shell pythia8-config --ldflags)
+
+# LHAPDF 6
+CXXFLAGS += $(shell lhapdf-config --cflags)
+LDFLAGS  += $(shell lhapdf-config --libs)
+
+EXE    := ttbar.exe ttbar_2l.exe
+EXESRC := $(patsubst %.exe,%.cc,$(EXE))
+EXEOBJ := $(EXESRC:.cc=.o)
 
 .PHONY: all clean
 
-all: ttbar
+all: $(EXE)
 
-ttbar: ttbar.cc
-	$(CXX) $^ -o $@ $(CXXFLAGS) $(LDFLAGS)
+%.exe: %.o
+	$(CXX) $(LDFLAGS) -o $@ $^
 
 clean:
-	rm -rf *.dSYM
-	rm -f ttbar
+	rm -f $(EXE)
