@@ -44,6 +44,10 @@ int main(int argc, char *argv[]) {
     // Switch off generation of steps subsequent to the process level one.
     pythia.readString("PartonLevel:all = off");
 
+    // PDF
+    std::string pdfset("LHAPDF6:NNPDF31_lo_as_0118");
+    pythia.readString("PDF:pSet = " + pdfset);
+
     // Create an LHAup object that can access relevant information in pythia.
     Pythia8::LHAupFromPYTHIA8 myLHA(&pythia.process, &pythia.info);
 

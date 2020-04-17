@@ -4,6 +4,10 @@ CXXFLAGS := -g -O2 -Wall -Wextra -pedantic -I. $(CXXFLAGS)
 CXXFLAGS += $(shell pythia8-config --cxxflags)
 LDFLAGS  += $(shell pythia8-config --ldflags)
 
+# LHAPDF 6
+CXXFLAGS += $(shell lhapdf-config --cflags)
+LDFLAGS  += $(shell lhapdf-config --libs)
+
 EXE    := pph2hpw.exe pph2hpw_2l.exe
 EXESRC := $(patsubst %.exe,%.cc,$(EXE))
 EXEOBJ := $(EXESRC:.cc=.o)
