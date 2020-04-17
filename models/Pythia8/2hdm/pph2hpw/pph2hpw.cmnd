@@ -1,0 +1,33 @@
+Beams:eCM = 13000.0
+
+Higgs:useBSM = on
+
+! the H2 couplings
+! See http://home.thep.lu.se/~torbjorn/pythia82html/HiggsProcesses.html
+HiggsH2:coup2d = 3.08496231131986
+HiggsH2:coup2u = -0.23166247903553996
+HiggsH2:coup2l = 3.08496231131986
+HiggsH2:coup2Z = 0.1
+HiggsH2:coup2W = 0.1
+HiggsH2:coup2Hchg = -1.0834599003715497
+HiggsH2:coup2H1H1 = 18.429480533977422
+HiggsH2:coup2A3A3 = -1.6836680269549102
+HiggsH2:coup2HchgW = 0.99498743710662
+
+! the H+ couplings
+HiggsHchg:tanBeta = 3.0
+HiggsHchg:coup2H1W = 0.1
+HiggsHchg:coup2H2W = 0.99498743710662
+
+! H2
+35:m0 = 800.0
+35:mWidth = 107.525
+35:doForceWidth = on
+
+! A
+36:m0 = 500.0
+
+! H+
+37:m0 = 500.0
+37:mWidth = 0.6265
+37:doForceWidth = on
