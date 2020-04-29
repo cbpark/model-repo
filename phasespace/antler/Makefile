@@ -10,11 +10,15 @@ COLEVENT := /usr/local
 CXXFLAGS += -I$(COLEVENT)/include/colevent
 LDFLAGS  += -L$(COLEVENT)/lib -lcolevent -Wl,-rpath $(COLEVENT)/lib
 
+EXE    := antler.exe antler_isr.exe
+EXESRC := $(patsubst %.exe,%.cc,$(EXE))
+EXEOBJ := $(EXESRC:.cc=.o)
+
 .PHONY: all clean
 
-all: antler.exe
+all: $(EXE)
 
-antler.exe: antler.o
+%.exe: %.o
 	$(CXX) $(LDFLAGS) -o $@ $^
 
 clean:
