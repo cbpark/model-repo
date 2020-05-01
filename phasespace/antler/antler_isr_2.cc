@@ -12,6 +12,7 @@
 #include "lhef/particle.h"
 
 const double MH = 800.0;
+const double PMAX = 1000.0;
 
 double sign_num(TRandom &r) {
     double x = r.Rndm();
@@ -38,14 +39,15 @@ int main(int argc, char *argv[]) {
 
     int nevent = std::atoi(argv[2]);
     for (auto iev = 0; iev < nevent; ++iev) {
-        double pt_isr = 1000 * r.Rndm();
+        double pt_isr = PMAX * r.Rndm();
         double cosphi = -1 + 2 * r.Rndm();
         double sinphi = std::sqrt(1 - cosphi * cosphi);
         double sgn = sign_num(r);
-        double pz_isr = sgn * 1000 * r.Rndm();
+        double pz_isr = sgn * PMAX * r.Rndm();
 
-        TLorentzVector H(pt_isr * cosphi, pt_isr * sinphi, pz_isr,
-                         std::sqrt(MH * MH + pt_isr * pt_isr));
+        TLorentzVector H(
+            pt_isr * cosphi, pt_isr * sinphi, pz_isr,
+            std::sqrt(MH * MH + pt_isr * pt_isr + pz_isr * pz_isr));
         TGenPhaseSpace hdecay;
         hdecay.SetDecay(H, 2, mT);
         hdecay.Generate();
