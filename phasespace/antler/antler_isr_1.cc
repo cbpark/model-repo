@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 
+#include "TF1.h"
 #include "TGenPhaseSpace.h"
 #include "TLorentzVector.h"
 #include "TRandom3.h"
@@ -26,6 +27,8 @@ int main(int argc, char *argv[]) {
     std::ofstream outfile(argv[1]);
     outfile << lhef::openingLine() << '\n';
 
+    auto pdf = std::make_shared<TF1>(
+        "pdf", "x * TMath::Power(1.0 + x / 100.0, -5)", 0, 1000);
     auto r = TRandom3(42);
 
     double mT[2] = {173.0, 173.0};
@@ -33,7 +36,7 @@ int main(int argc, char *argv[]) {
 
     int nevent = std::atoi(argv[2]);
     for (auto iev = 0; iev < nevent; ++iev) {
-        double pt_isr = 1000 * r.Rndm();
+        double pt_isr = pdf->GetRandom();
         double cosphi = -1 + 2 * r.Rndm();
         double sinphi = std::sqrt(1 - cosphi * cosphi);
 
