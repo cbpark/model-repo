@@ -24,7 +24,8 @@ int main(int argc, char *argv[]) {
 
     TLorentzVector H(0, 0, 0, 800);
     double mT[2] = {173.0, 173.0};
-    double mWV[2] = {80.379, 4.8};
+    double mWB[2] = {80.379, 4.8};
+    double mLnu[2] = {0.0, 0.0};
 
     TGenPhaseSpace hdecay;
     hdecay.SetDecay(H, 2, mT);
@@ -44,24 +45,44 @@ int main(int argc, char *argv[]) {
                                     pT2->Pz(), pT2->E(), pT2->M(), 0, 0));
 
         TGenPhaseSpace t1decay, t2decay;
-        t1decay.SetDecay(*pT1, 2, mWV);
-        t2decay.SetDecay(*pT2, 2, mWV);
+        t1decay.SetDecay(*pT1, 2, mWB);
+        t2decay.SetDecay(*pT2, 2, mWB);
 
         t1decay.Generate();
         auto pW1 = t1decay.GetDecay(0);
-        ps.push_back(lhef::Particle(24, 1, 2, 0, 0, 0, pW1->Px(), pW1->Py(),
+        ps.push_back(lhef::Particle(24, 2, 2, 0, 0, 0, pW1->Px(), pW1->Py(),
                                     pW1->Pz(), pW1->E(), pW1->M(), 0, 0));
-        auto pV1 = t1decay.GetDecay(1);
-        ps.push_back(lhef::Particle(5, 1, 2, 0, 0, 0, pV1->Px(), pV1->Py(),
-                                    pV1->Pz(), pV1->E(), pV1->M(), 0, 0));
+        auto pB1 = t1decay.GetDecay(1);
+        ps.push_back(lhef::Particle(5, 1, 2, 0, 0, 0, pB1->Px(), pB1->Py(),
+                                    pB1->Pz(), pB1->E(), pB1->M(), 0, 0));
 
         t2decay.Generate();
         auto pW2 = t2decay.GetDecay(0);
-        ps.push_back(lhef::Particle(-24, 1, 3, 0, 0, 0, pW2->Px(), pW2->Py(),
+        ps.push_back(lhef::Particle(-24, 2, 3, 0, 0, 0, pW2->Px(), pW2->Py(),
                                     pW2->Pz(), pW2->E(), pW2->M(), 0, 0));
-        auto pV2 = t2decay.GetDecay(1);
-        ps.push_back(lhef::Particle(-5, 1, 3, 0, 0, 0, pV2->Px(), pV2->Py(),
-                                    pV2->Pz(), pV2->E(), pV2->M(), 0, 0));
+        auto pB2 = t2decay.GetDecay(1);
+        ps.push_back(lhef::Particle(-5, 1, 3, 0, 0, 0, pB2->Px(), pB2->Py(),
+                                    pB2->Pz(), pB2->E(), pB2->M(), 0, 0));
+
+        TGenPhaseSpace w1decay, w2decay;
+        w1decay.SetDecay(*pW1, 2, mLnu);
+        w2decay.SetDecay(*pW2, 2, mLnu);
+
+        w1decay.Generate();
+        auto pL1 = w1decay.GetDecay(0);
+        ps.push_back(lhef::Particle(-11, 1, 4, 0, 0, 0, pL1->Px(), pL1->Py(),
+                                    pL1->Pz(), pL1->E(), pL1->M(), 0, 0));
+        auto pNu1 = w1decay.GetDecay(1);
+        ps.push_back(lhef::Particle(12, 1, 4, 0, 0, 0, pNu1->Px(), pNu1->Py(),
+                                    pNu1->Pz(), pNu1->E(), pNu1->M(), 0, 0));
+
+        w2decay.Generate();
+        auto pL2 = w2decay.GetDecay(0);
+        ps.push_back(lhef::Particle(11, 1, 6, 0, 0, 0, pL2->Px(), pL2->Py(),
+                                    pL2->Pz(), pL2->E(), pL2->M(), 0, 0));
+        auto pNu2 = w2decay.GetDecay(1);
+        ps.push_back(lhef::Particle(-12, 1, 6, 0, 0, 0, pNu2->Px(), pNu2->Py(),
+                                    pNu2->Pz(), pNu2->E(), pNu2->M(), 0, 0));
 
         lhef::EventEntry entry;
         int i = 1;
@@ -69,7 +90,7 @@ int main(int argc, char *argv[]) {
             entry.insert({i, p});
             ++i;
         }
-        lhef::EventInfo evinfo(7, 0, 0, 0, 0, 0);
+        lhef::EventInfo evinfo(11, 9999, 0, 0, 0, 0);
         lhef::Event ev(evinfo, entry);
         outfile << ev << '\n';
     }
