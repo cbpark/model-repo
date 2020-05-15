@@ -17,3 +17,4 @@ Makefile.inc
 *.dSYM
 *.exe
 *.gz
+*.sh
