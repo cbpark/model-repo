@@ -6,11 +6,11 @@ CXXFLAGS += $(shell root-config --cflags)
 LDFLAGS  += $(shell root-config --libs)
 
 # colevent (https://github.com/cbpark/colevent)
-COLEVENT := /usr/local
+COLEVENT ?= /usr/local
 CXXFLAGS += -I$(COLEVENT)/include/colevent
 LDFLAGS  += -L$(COLEVENT)/lib -lcolevent -Wl,-rpath $(COLEVENT)/lib
 
-EXE    := antler.exe antler_isr_1.exe antler_isr_2.exe
+EXE    := antler.exe antler_isr_1.exe
 EXESRC := $(patsubst %.exe,%.cc,$(EXE))
 EXEOBJ := $(EXESRC:.cc=.o)
 

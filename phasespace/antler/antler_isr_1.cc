@@ -40,9 +40,10 @@ int main(int argc, char *argv[]) {
         double pt_isr = pdf->GetRandom();
         double cosphi = -1 + 2 * r.Rndm();
         double sinphi = std::sqrt(1 - cosphi * cosphi);
+        double pz_isr = pdf->GetRandom();
 
-        TLorentzVector H(pt_isr * cosphi, pt_isr * sinphi, 0,
-                         std::sqrt(MH * MH + pt_isr * pt_isr));
+        TLorentzVector H(pt_isr * cosphi, pt_isr * sinphi, pz_isr,
+                         std::sqrt(MH * MH + pt_isr * pt_isr + pz_isr * pz_isr));
         TGenPhaseSpace hdecay;
         hdecay.SetDecay(H, 2, mT);
         hdecay.Generate();
