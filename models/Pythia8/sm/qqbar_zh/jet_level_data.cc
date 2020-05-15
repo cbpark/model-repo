@@ -9,9 +9,9 @@
 #include "Pythia8/Pythia.h"
 #include "hadron_level_data.h"
 
-using Pythia8::Particle;
-using fastjet::PseudoJet;
 using fastjet::ClusterSequence;
+using fastjet::PseudoJet;
+using Pythia8::Particle;
 using PseudoJets = std::vector<PseudoJet>;
 
 int charge(const PseudoJet& j) {
@@ -51,9 +51,10 @@ std::pair<PseudoJets, std::unique_ptr<ClusterSequence>> jetObjects(
 
     // Central hard jets.
     PseudoJets jets = clusterSeq->inclusive_jets(10.0);
-    jets.erase(std::remove_if(jets.begin(), jets.end(), [](const PseudoJet& j) {
-                   return std::fabs(j.eta()) > 2.5;
-               }), jets.end());
+    jets.erase(std::remove_if(
+                   jets.begin(), jets.end(),
+                   [](const PseudoJet& j) { return std::fabs(j.eta()) > 2.5; }),
+               jets.end());
     return std::make_pair(jets, std::move(clusterSeq));
 }
 
