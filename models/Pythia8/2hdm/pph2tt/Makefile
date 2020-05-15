@@ -13,7 +13,7 @@ CXXFLAGS += $(shell fastjet-config --cxxflags)
 LDFLAGS  += $(shell fastjet-config --libs)
 
 # colevent (https://github.com/cbpark/colevent)
-COLEVENT := /usr/local
+COLEVENT ?= /usr/local
 CXXFLAGS += -I$(COLEVENT)/include/colevent
 LDFLAGS  += -L$(COLEVENT)/lib -lcolevent -Wl,-rpath $(COLEVENT)/lib
 
