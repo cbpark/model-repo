@@ -1,24 +1,31 @@
-CXXFLAGS := -g -O2 -Wall -Wextra -pedantic -I. $(CXXFLAGS)
+CXXFLAGS := -g -O2 -Wall -Wextra -std=c++14 -pedantic -I. $(CXXFLAGS)
 
 # Pythia 8
-CXXFLAGS += $(shell pythia8-config --cxxflags)
-# LDFLAGS  += $(shell pythia8-config --ldflags)
+CXXFLAGS +=   $(shell pythia8-config --cxxflags)
 LDFLAGS  += -L$(shell pythia8-config --libdir) -lpythia8
 
 # LHAPDF 6
 CXXFLAGS += $(shell lhapdf-config --cflags)
 LDFLAGS  += $(shell lhapdf-config --libs)
 
-EXE    := pph2tt_2l.exe
-EXESRC := $(patsubst %.exe,%.cc,$(EXE))
-EXEOBJ := $(EXESRC:.cc=.o)
+# FastJet
+CXXFLAGS += $(shell fastjet-config --cxxflags)
+LDFLAGS  += $(shell fastjet-config --libs)
+
+# colevent (https://github.com/cbpark/colevent)
+COLEVENT := /usr/local
+CXXFLAGS += -I$(COLEVENT)/include/colevent
+LDFLAGS  += -L$(COLEVENT)/lib -lcolevent -Wl,-rpath $(COLEVENT)/lib
+
+EXE := pph2tt_2l_parton.exe
+OBJ := pph2tt_2l_parton.o
 
 .PHONY: all clean
 
-all: $(EXE)
+all: pph2tt_2l_parton.exe
 
-%.exe: %.o
+pph2tt_2l_parton.exe: pph2tt_2l_parton.o
 	$(CXX) $(LDFLAGS) -o $@ $^
 
 clean:
-	rm -f $(EXE)
+	rm -f $(OBJ) $(EXE)
