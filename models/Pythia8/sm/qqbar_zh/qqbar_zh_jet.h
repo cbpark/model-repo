@@ -2,7 +2,7 @@
 #define MODELS_PYTHIA8_SM_QQBAR_ZH_QQBAR_ZH_JET_H_
 
 #include "fastjet/PseudoJet.hh"
-#include "CLHCO/lhco.h"
+#include "lhco/lhco.h"
 #include "jet_level_data.h"
 
 lhco::Object toLHCOObj(const fastjet::PseudoJet& j, int typ, int ntrk,

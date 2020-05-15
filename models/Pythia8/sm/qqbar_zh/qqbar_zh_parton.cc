@@ -4,11 +4,11 @@
 #include <string>
 #include <vector>
 #include "Pythia8/Pythia.h"
-#include "CLHEF/lhef.h"
+#include "lhef/lhef.h"
 
 using std::vector;
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     std::string appname = "qqbar_zh_parton";
     if (argc != 3) {
         std::cerr << " Usage: " << appname << " output nevent\n"
@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
     pythia.readFile("qqbar_zh_parton.cmnd");
     pythia.init();
 
-    ofstream outfile;
+    std::ofstream outfile;
     outfile.open(argv[1]);
     outfile << lhef::openingLine() << '\n';
     lhef::GlobalInfo info(pythia.info.idA(), pythia.info.idB(),
@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
                 //   into photons. Hence, pi0 can be considered as a
                 //   visible particle.
                 vector<int> daughters = p.daughterList();
-                for (const auto& d : daughters) {
+                for (const auto &d : daughters) {
                     auto daughter = pythia.event.at(d);
                     int motherline = daughter.mother1();
                     ps.push_back(
@@ -71,7 +71,7 @@ int main(int argc, char* argv[]) {
 
         lhef::EventEntry entry;
         int i = 1;
-        for (const auto& p : ps) {
+        for (const auto &p : ps) {
             entry.insert({i, p});
             ++i;
         }

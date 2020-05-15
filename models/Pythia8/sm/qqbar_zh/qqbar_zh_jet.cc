@@ -3,11 +3,11 @@
 #include <iostream>
 #include <string>
 #include "Pythia8/Pythia.h"
-#include "CLHCO/lhco.h"
 #include "hadron_level_data.h"
 #include "jet_level_data.h"
+#include "lhco/lhco.h"
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     std::string appname = "qqbar_zh_jet";
     if (argc != 3) {
         std::cerr << " Usage: " << appname << " output nevent\n"
