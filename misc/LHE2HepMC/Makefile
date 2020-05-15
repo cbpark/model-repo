@@ -1,23 +1,22 @@
-CXX = c++
-CXXFLAGS += -Wall -g -O2 -I.
+CXXFLAGS := -g -O2 -Wall -I.
+LDFLAGS  := -O2 -m64
 
 # PYTHIA
-PYTHIA = /usr/local
-CXXFLAGS += -I$(PYTHIA)/include
-LDFLAGS += -L$(PYTHIA)/lib -lpythia8 -Wl,-rpath $(PYTHIA)/lib
+PYTHIA   := $(shell pythia8-config --prefix)
+CXXFLAGS += $(shell pythia8-config --cflags)
+LDFLAGS  += -L$(PYTHIA)/lib -lpythia8 -Wl,-rpath $(PYTHIA)/lib
 
 # HepMC
-HEPMC = /usr/local
+HEPMC    ?= /usr/local
 CXXFLAGS += -I$(HEPMC)/include
-LDFLAGS += -L$(HEPMC)/lib -lHepMC -Wl,-rpath $(HEPMC)/lib
+LDFLAGS  += -L$(HEPMC)/lib -lHepMC -Wl,-rpath $(HEPMC)/lib
 
 .PHONY: all clean
 
-all: LHE2HepMC
+all: LHE2HepMC.exe
 
-LHE2HepMC: LHE2HepMC.cc
-	$(CXX) $^ -o $@ $(CXXFLAGS) $(LDFLAGS)
+%.exe: %.o
+	$(CXX) $(LDFLAGS) -o $@ $^
 
 clean:
-	rm -rf *.dSYM
-	rm -f LHE2HepMC
+	rm -f LHE2HepMC.o LHE2HepMC.exe
