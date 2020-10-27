@@ -1,7 +1,9 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <random>
 #include <string>
+#include <utility>
 
 #include "TGenPhaseSpace.h"
 #include "TLorentzVector.h"
@@ -13,6 +15,8 @@ const double EPS = 1.0e-20;
 
 const double MTAU = 1.777;
 const double MMU = 0.105;
+
+std::pair<int, int> decay_chain();
 
 int main(int argc, char *argv[]) {
     std::string appname = "ditau_4";
@@ -48,11 +52,12 @@ int main(int argc, char *argv[]) {
         ps.push_back(lhef::Particle(-11, -1, 0, 0, 0, 0, ep.Px(), ep.Py(),
                                     ep.Pz(), ep.E(), ep.M(), 0, 0));
 
-        auto tau1 = event.GetDecay(0);
+        const auto chain = decay_chain();
+        auto tau1 = event.GetDecay(chain.first);
         // line 3
         ps.push_back(lhef::Particle(15, 2, 1, 2, 0, 0, tau1->Px(), tau1->Py(),
                                     tau1->Pz(), tau1->E(), tau1->M(), 0, 0));
-        auto tau2 = event.GetDecay(1);
+        auto tau2 = event.GetDecay(chain.second);
         // line 4
         ps.push_back(lhef::Particle(-15, 2, 1, 2, 0, 0, tau2->Px(), tau2->Py(),
                                     tau2->Pz(), tau2->E(), tau2->M(), 0, 0));
@@ -102,4 +107,13 @@ int main(int argc, char *argv[]) {
 
     outfile << lhef::closingLine();
     outfile.close();
+}
+
+std::pair<int, int> decay_chain() {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<double> dr(0.0, 1.0);
+    int chain1 = dr(gen) < 0.5 ? 0 : 1;
+    int chain2 = 1 - chain1;
+    return {chain1, chain2};
 }
