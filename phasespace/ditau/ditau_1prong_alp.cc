@@ -52,8 +52,7 @@ int main(int argc, char *argv[]) {
 
     int nevent = std::atoi(argv[3]);
     cout << APPNAME << ": we will generate " << nevent
-         << " event for 3x1 process.\n";
-    // gRandom->SetSeed(std::time(0));
+         << " event for 1x1 process.\n";
     gRandom = new TRandom3(0);
     for (auto iev = 1; iev != nevent + 1; ++iev) {
         event.Generate();

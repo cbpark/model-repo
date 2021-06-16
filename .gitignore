@@ -19,3 +19,4 @@ Makefile.inc
 *.gz
 *.sh
 .ccls-cache
+events
