@@ -69,15 +69,17 @@ int main(int argc, char *argv[]) {
 
         tau.Generate();
 
-        auto tau_line_num = undecayed_tau_pos->first auto decay_prod =
-            tau.GetDecay(0);  // electron
+        const auto tau_line_num = undecayed_tau_pos->first;
+        // electron
+        auto decay_prod = tau.GetDecay(0);
         auto elec =
-            lhef::Particle(11 * std::abs(decayed_tau.pid()) / decayed_tau.pid(),
+            lhef::Particle(11 * decayed_tau.pid() / std::abs(decayed_tau.pid()),
                            1, tau_line_num, tau_line_num, 0, 0,
                            decay_prod->Px(), decay_prod->Py(), decay_prod->Pz(),
                            decay_prod->E(), decay_prod->M(), 0, 0);
         entries.insert({9, elec});
-        decay_prod = tau.GetDecay(1);  // ALP
+        // ALP
+        decay_prod = tau.GetDecay(1);
         auto alp =
             lhef::Particle(40, 1, tau_line_num, tau_line_num, 0, 0,
                            decay_prod->Px(), decay_prod->Py(), decay_prod->Pz(),
