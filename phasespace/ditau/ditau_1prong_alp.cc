@@ -115,7 +115,7 @@ int main(int argc, char *argv[]) {
         outfile << ev << '\n';
 
         if ((iev < 10000 && iev % 1000 == 0) || iev % 10000 == 0) {
-            cout << "... processed " << iev << " events.\n";
+            cout << "... generated " << iev << " events.\n";
         }
     }
 
