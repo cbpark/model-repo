@@ -1,4 +1,4 @@
-CXXFLAGS := -g -O2 -Wall -std=c++14
+CXXFLAGS := -g -O2 -Wall -std=c++17
 LDFLAGS  := -O2
 
 # ROOT
@@ -10,7 +10,7 @@ COLEVENT ?= /usr/local
 CXXFLAGS += -I$(COLEVENT)/include/colevent
 LDFLAGS  += -L$(COLEVENT)/lib -lcolevent -Wl,-rpath $(COLEVENT)/lib
 
-EXE    := ditau_2.exe ditau_3.exe ditau_4.exe
+EXE    := ditau_3prong_alp.exe ditau_1prong_alp.exe
 EXESRC := $(patsubst %.exe,%.cc,$(EXE))
 EXEOBJ := $(EXESRC:.cc=.o)
 

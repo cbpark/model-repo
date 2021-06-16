@@ -18,3 +18,4 @@ Makefile.inc
 *.exe
 *.gz
 *.sh
+.ccls-cache
