@@ -10,7 +10,7 @@ COLEVENT ?= /usr/local
 CXXFLAGS += -I$(COLEVENT)/include/colevent
 LDFLAGS  += -L$(COLEVENT)/lib -lcolevent -Wl,-rpath $(COLEVENT)/lib
 
-EXE    := ditau_3prong_alp.exe ditau_1prong_alp.exe
+EXE    := ditau_alp_decay.exe
 EXESRC := $(patsubst %.exe,%.cc,$(EXE))
 EXEOBJ := $(EXESRC:.cc=.o)
 
