@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
     std::ofstream outfile{argv[2]};
     outfile << lhef::openingLine() << '\n';
     outfile << "<init>\n11 -11 7.000000e+00 4.000000e+00 0 0 247000 247000 -4 "
-               "2\n0 0 0 1\n0 0 0 1\n</init>\n";
+               "2\n0 0 0 1\n0 0 0 2\n</init>\n";
 
     const double malp = std::atof(argv[3]);
     cout << APPNAME << ": mALP = " << malp << " GeV\n";
@@ -50,14 +50,21 @@ int main(int argc, char *argv[]) {
     gRandom = new TRandom3(0);
     for (auto iev = 1; !lhe.empty();
          lhe = lhef::parseEvent(&lhe_input), ++iev) {
+        // particle entries (unordered_map).
         auto entries = lhe.particleEntries();
+
+        // copy the event information.
+        auto evinfo0 = lhe.eventInfo();
 
         // is there a tau in the final state?
         auto undecayed_tau_pos =
             std::find_if(entries.begin(), entries.end(), [](const auto &p) {
                 return std::abs(p.second.pid()) == 15 && p.second.status() == 1;
             });
-        if (undecayed_tau_pos == entries.end()) { continue; }
+        if (undecayed_tau_pos == entries.end()) {
+            cout << "No tau in the final state!\n";
+            continue;
+        }
 
         auto decayed_tau = undecayed_tau_pos->second;
         decayed_tau.set_status(2);  // set it to be unstable
@@ -65,10 +72,11 @@ int main(int argc, char *argv[]) {
 
         TLorentzVector tau_momentum{decayed_tau.px(), decayed_tau.py(),
                                     decayed_tau.pz(), decayed_tau.energy()};
-        tau.SetDecay(tau_momentum, 2, MElecAlp);
+        tau.SetDecay(tau_momentum, 2, MElecAlp);  // tau --> e + a
 
         tau.Generate();
 
+        // the line number of the parent tau.
         const auto tau_line_num = undecayed_tau_pos->first;
         // electron
         auto decay_prod = tau.GetDecay(0);
@@ -77,17 +85,15 @@ int main(int argc, char *argv[]) {
                            1, tau_line_num, tau_line_num, 0, 0,
                            decay_prod->Px(), decay_prod->Py(), decay_prod->Pz(),
                            decay_prod->E(), decay_prod->M(), 0, 0);
-        entries.insert({9, elec});
+        entries.insert({evinfo0.nup + 1, elec});
         // ALP
         decay_prod = tau.GetDecay(1);
         auto alp =
             lhef::Particle(40, 1, tau_line_num, tau_line_num, 0, 0,
                            decay_prod->Px(), decay_prod->Py(), decay_prod->Pz(),
                            decay_prod->E(), decay_prod->M(), 0, 0);
-        entries.insert({10, alp});
+        entries.insert({evinfo0.nup + 2, alp});
 
-        // copy the event information.
-        auto evinfo0 = lhe.eventInfo();
         // two more lines added!
         lhef::EventInfo evinfo(evinfo0.nup + 2, evinfo0.idprup, evinfo0.xwgtup,
                                evinfo0.scalup, evinfo0.aqedup, evinfo0.aqcdup);
